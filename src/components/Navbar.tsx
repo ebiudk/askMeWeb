@@ -13,6 +13,9 @@ export default async function Navbar() {
               <img src="/logo.png" alt="AskMe Logo" className="h-8 w-8" />
               <span className="text-2xl font-bold text-indigo-600">AskMe! Web</span>
             </Link>
+            <Link href="https://github.com/ebiudk/askMeClient/releases/latest" target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 ml-4">
+              クライアントダウンロード
+            </Link>
           </div>
           <div className="flex items-center gap-4">
             {session ? (
