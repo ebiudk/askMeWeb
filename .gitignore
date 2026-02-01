@@ -1,0 +1,23 @@
+# compiled output
+/dist
+/.next
+/out
+
+# dependencies
+/node_modules
+
+# IDEs and editors
+/.idea
+/.vscode
+/*.swp
+/*.swo
+/*.swn
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# env
+.env*.local
+
+/src/generated/prisma
