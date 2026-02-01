@@ -83,6 +83,17 @@ model Group {
 
   owner       User         @relation(fields: [owner_id], references: [id])
   memberships Membership[]
+  inviteTokens InviteToken[]
+}
+
+model InviteToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  group_id  String
+  expires   DateTime
+  createdAt DateTime @default(now())
+
+  group     Group    @relation(fields: [group_id], references: [id], onDelete: Cascade)
 }
 
 model Membership {

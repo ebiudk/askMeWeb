@@ -12,6 +12,7 @@ VRChatの居場所（インスタンス情報）を特定のグループ内で�
 - `Group`: グループ名.
 - `Membership`: ユーザーとグループの多対多関係。ロール（`admin`, `member`）を保持。
 - `Account`, `Session`, `VerificationToken`: Auth.js標準。
+- `InviteToken`: グループへの招待トークン。有効期限あり。
 
 ## 主要機能とフロー
 ### 1. 認証 (Auth.js)
@@ -22,9 +23,11 @@ VRChatの居場所（インスタンス情報）を特定のグループ内で�
 
 ### 2. グループ管理
 - **作成**: `POST /api/groups` で新規作成。作成者は `admin` ロール。
+- **参加**: 招待URL経由での参加。招待URLに含まれるトークンを検証。
 - **情報取得**:
   - `GET /api/groups`: 参加中のグループ一覧を取得。
   - `GET /api/groups/[id]`: グループ詳細とメンバーの居場所一覧を取得（メンバーのみ）。
+  - `GET /api/groups/invite-info?token=...`: 招待トークンからグループ名を確認。
 - **表示**: `/` (ダッシュボード) で参加中一覧、`/groups/[id]` でメンバーの居場所一覧を表示。
 
 ### 3. 居場所共有

@@ -1,6 +1,7 @@
 import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { notFound, redirect } from "next/navigation"
+import Invitation from "@/components/Invitation"
 import MemberRow from "@/components/MemberRow"
 import GroupSettings from "@/components/GroupSettings"
 import { Suspense } from "react"
@@ -55,6 +56,7 @@ async function GroupDetail({ id, userId }: { id: string; userId: string }) {
             currentUserId={userId}
             isAdmin={isManagement}
           />
+          <Invitation groupId={id} isAdmin={isManagement} />
         </div>
       </div>
 
