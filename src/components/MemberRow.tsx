@@ -245,9 +245,9 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
                   href={`https://vrchat.com/home/launch?worldId=${membership.user.location.world_id}${membership.user.location.instance_id ? `&instanceId=${membership.user.location.instance_id}` : ""}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ml-2 text-indigo-600 hover:text-indigo-900 underline"
+                  className="ml-4 inline-flex items-center px-8 py-3 border border-transparent text-lg font-bold rounded-lg shadow-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all active:scale-95"
                 >
-                  VRChatで開く
+                  Join
                 </a>
               )}
             </p>
