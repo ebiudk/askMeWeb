@@ -9,7 +9,7 @@ VRChatの居場所（インスタンス情報）を特定のグループ内で�
 
 ## データモデル (Prisma Schema)
 - `User`: VRChat ID (`vrchat_id`), 現在のワールドID (`current_world_id`), 表示名 (`display_name`), 最終更新日時.
-- `Group`: グループ名, 一意の招待コード (`invite_code`).
+- `Group`: グループ名.
 - `Membership`: ユーザーとグループの多対多関係。ロール（`admin`, `member`）を保持。
 - `Account`, `Session`, `VerificationToken`: Auth.js標準。
 
@@ -21,12 +21,10 @@ VRChatの居場所（インスタンス情報）を特定のグループ内で�
 - パフォーマンス向上のため、サーバーサイドの `auth()` は React の `cache` でラップされている。
 
 ### 2. グループ管理
-- **作成**: `POST /api/groups` で新規作成。作成者は `admin` ロール。招待コードは `nanoid` で自動生成。
-- **参加**: `POST /api/groups/join` に招待コードを送信。または招待URL経由。
+- **作成**: `POST /api/groups` で新規作成。作成者は `admin` ロール。
 - **情報取得**:
   - `GET /api/groups`: 参加中のグループ一覧を取得。
   - `GET /api/groups/[id]`: グループ詳細とメンバーの居場所一覧を取得（メンバーのみ）。
-  - `GET /api/groups/invite-info?code=...`: 招待コードからグループ名を確認。
 - **表示**: `/` (ダッシュボード) で参加中一覧、`/groups/[id]` でメンバーの居場所一覧を表示。
 
 ### 3. 居場所共有

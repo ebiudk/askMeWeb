@@ -45,13 +45,7 @@ export async function GET(
   // Check if user is a member
   const isMember = group.memberships.some((m: any) => m.user_id === session.user!.id)
   if (!isMember) {
-    // Only return limited info for non-members (for invite screen)
-    return NextResponse.json({ 
-      group: {
-        id: group.id,
-        name: group.name,
-      }
-    })
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
   return NextResponse.json({ group })
