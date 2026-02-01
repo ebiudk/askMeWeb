@@ -60,7 +60,7 @@ async function GroupDetail({ id, userId }: { id: string; userId: string }) {
         </div>
       </div>
 
-      <div className="bg-white shadow overflow-hidden sm:rounded-md">
+      <div className="bg-white shadow sm:rounded-md">
         <ul className="divide-y divide-gray-200">
           {group.memberships.map((membership: any) => (
             <MemberRow 

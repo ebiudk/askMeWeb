@@ -135,7 +135,7 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
   ]
 
   return (
-    <li key={membership.user.id} className="hover:bg-gray-50 transition-colors duration-150">
+    <li key={membership.user.id} className="hover:bg-gray-50 transition-colors duration-150 first:rounded-t-md last:rounded-b-md">
       <div className="px-4 py-4 sm:px-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center">
@@ -158,55 +158,55 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
             )}
           </div>
 
-          {showManagement && (
-            <div className="ml-2 flex items-center relative" ref={dropdownRef}>
-              <button
-                type="button"
-                onClick={() => !loading && setIsOpen(!isOpen)}
-                disabled={loading}
-                className={`
-                  inline-flex items-center justify-between w-32 px-3 py-1.5 text-sm font-medium border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-200
-                  ${loading ? "bg-gray-50 border-gray-200 text-gray-400 cursor-not-allowed" : "bg-white border-gray-300 text-gray-700 hover:border-indigo-400 focus:ring-indigo-500 focus:border-indigo-500"}
-                `}
-              >
-                <span>{roles.find(r => r.id === localRole)?.label}</span>
-                <ChevronDownIcon className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
-              </button>
+          <div className="flex items-center space-x-2">
+            {showManagement && (
+              <div className="flex items-center relative" ref={dropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => !loading && setIsOpen(!isOpen)}
+                  disabled={loading}
+                  className={`
+                    inline-flex items-center justify-between w-32 px-3 py-1.5 text-sm font-medium border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-200
+                    ${loading ? "bg-gray-50 border-gray-200 text-gray-400 cursor-not-allowed" : "bg-white border-gray-300 text-gray-700 hover:border-indigo-400 focus:ring-indigo-500 focus:border-indigo-500"}
+                  `}
+                >
+                  <span>{roles.find(r => r.id === localRole)?.label}</span>
+                  <ChevronDownIcon className={`h-4 w-4 text-gray-400 transition-transform duration-200 ${isOpen ? "rotate-180" : ""}`} />
+                </button>
 
-              {isOpen && (
-                <div className="absolute right-0 top-full mt-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20 overflow-hidden">
-                  <div className="py-1" role="menu" aria-orientation="vertical">
-                    {roles.map((role) => (
-                      <button
-                        key={role.id}
-                        onClick={() => handleRoleChange(role.id)}
-                        className={`
-                          group flex w-full items-start px-4 py-2 text-sm text-left transition-colors duration-150
-                          ${localRole === role.id ? "bg-indigo-50 text-indigo-900" : "text-gray-700 hover:bg-gray-50"}
-                        `}
-                        role="menuitem"
-                      >
-                        <div className="flex-1">
-                          <p className={`font-medium ${localRole === role.id ? "text-indigo-900" : "text-gray-900"}`}>
-                            {role.label}
-                          </p>
-                          <p className="text-xs text-gray-500 group-hover:text-gray-600 mt-0.5">
-                            {role.description}
-                          </p>
-                        </div>
-                        {localRole === role.id && (
-                          <CheckIcon className="h-4 w-4 text-indigo-600 mt-1" />
-                        )}
-                      </button>
-                    ))}
+                {isOpen && (
+                  <div className="absolute right-0 top-full mt-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20 overflow-hidden">
+                    <div className="py-1" role="menu" aria-orientation="vertical">
+                      {roles.map((role) => (
+                        <button
+                          key={role.id}
+                          onClick={() => handleRoleChange(role.id)}
+                          className={`
+                            group flex w-full items-start px-4 py-2 text-sm text-left transition-colors duration-150
+                            ${localRole === role.id ? "bg-indigo-50 text-indigo-900" : "text-gray-700 hover:bg-gray-50"}
+                          `}
+                          role="menuitem"
+                        >
+                          <div className="flex-1">
+                            <p className={`font-medium ${localRole === role.id ? "text-indigo-900" : "text-gray-900"}`}>
+                              {role.label}
+                            </p>
+                            <p className="text-xs text-gray-500 group-hover:text-gray-600 mt-0.5">
+                              {role.description}
+                            </p>
+                          </div>
+                          {localRole === role.id && (
+                            <CheckIcon className="h-4 w-4 text-indigo-600 mt-1" />
+                          )}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
-          )}
+                )}
+              </div>
+            )}
 
-          {!showManagement && showRemove && (
-            <div className="ml-2">
+            {!showManagement && showRemove && (
               <button
                 onClick={handleRemoveMember}
                 disabled={loading}
@@ -214,11 +214,9 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
               >
                 {membership.user.id === currentUserId ? "脱退する" : "削除"}
               </button>
-            </div>
-          )}
+            )}
 
-          {showManagement && (
-            <div className="ml-1">
+            {showManagement && (
               <button
                 onClick={handleRemoveMember}
                 disabled={loading}
@@ -227,8 +225,8 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
               >
                 <TrashIcon className="h-5 w-5" />
               </button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
         <div className="mt-2 sm:flex sm:justify-between">
           <div className="sm:flex">
