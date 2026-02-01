@@ -9,18 +9,21 @@ export async function POST(req: Request) {
   }
 
   try {
-    const { invite_code } = await req.json()
-    if (!invite_code) {
-      return NextResponse.json({ error: "Invite code is required" }, { status: 400 })
+    const { token } = await req.json()
+    if (!token) {
+      return NextResponse.json({ error: "Invite token is required" }, { status: 400 })
     }
 
-    const group = await prisma.group.findUnique({
-      where: { invite_code },
+    const inviteToken = await prisma.inviteToken.findUnique({
+      where: { token },
+      include: { group: true },
     })
 
-    if (!group) {
-      return NextResponse.json({ error: "Invalid invite code" }, { status: 404 })
+    if (!inviteToken || inviteToken.expires < new Date()) {
+      return NextResponse.json({ error: "Invalid or expired invite token" }, { status: 404 })
     }
+
+    const group = inviteToken.group
 
     const membership = await prisma.membership.upsert({
       where: {

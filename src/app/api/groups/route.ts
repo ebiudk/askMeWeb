@@ -15,12 +15,9 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Name is required" }, { status: 400 })
     }
 
-    const invite_code = nanoid(10)
-
     const group = await prisma.group.create({
       data: {
         name,
-        invite_code,
         owner_id: session.user!.id,
         memberships: {
           create: {

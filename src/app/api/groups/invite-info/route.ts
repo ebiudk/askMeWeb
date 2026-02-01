@@ -9,26 +9,30 @@ export async function GET(req: Request) {
   }
 
   const { searchParams } = new URL(req.url)
-  const code = searchParams.get("code")
+  const token = searchParams.get("token")
 
-  if (!code) {
-    return NextResponse.json({ error: "Invite code is required" }, { status: 400 })
+  if (!token) {
+    return NextResponse.json({ error: "Invite token is required" }, { status: 400 })
   }
 
   try {
-    const group = await prisma.group.findUnique({
-      where: { invite_code: code },
-      select: {
-        id: true,
-        name: true,
+    const inviteToken = await prisma.inviteToken.findUnique({
+      where: { token },
+      include: {
+        group: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
       },
     })
 
-    if (!group) {
-      return NextResponse.json({ error: "Invalid invite code" }, { status: 404 })
+    if (!inviteToken || inviteToken.expires < new Date()) {
+      return NextResponse.json({ error: "Invalid or expired invite token" }, { status: 404 })
     }
 
-    return NextResponse.json({ group })
+    return NextResponse.json({ group: inviteToken.group })
   } catch (error) {
     console.error("Invite info fetch error:", error)
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })

@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma"
 import { notFound, redirect } from "next/navigation"
 import Invitation from "@/components/Invitation"
 import MemberRow from "@/components/MemberRow"
+import GroupSettings from "@/components/GroupSettings"
 import { Suspense } from "react"
 
 async function GroupDetail({ id, userId }: { id: string; userId: string }) {
@@ -43,14 +44,19 @@ async function GroupDetail({ id, userId }: { id: string; userId: string }) {
   const myMembership = group.memberships.find((m: any) => m.user_id === userId)
   if (!myMembership) redirect("/")
 
-  const isManagement = myMembership.role === "admin" || myMembership.role === "co-admin"
+  const isAdmin = myMembership.role === "admin"
+  const isManagement = isAdmin || myMembership.role === "co-admin"
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-start">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">{group.name}</h1>
-          <Invitation inviteCode={group.invite_code} isAdmin={isManagement} />
+        <div className="flex-1">
+          <GroupSettings 
+            group={{ id: group.id, name: group.name, owner_id: group.owner_id }} 
+            currentUserId={userId}
+            isAdmin={isManagement}
+          />
+          <Invitation groupId={id} isAdmin={isManagement} />
         </div>
       </div>
 
