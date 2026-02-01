@@ -12,7 +12,7 @@ export default {
     authorized({ auth, request: { nextUrl } }) {
       const isLoggedIn = !!auth?.user
       const isOnLoginPage = nextUrl.pathname === "/login"
-      const isPublicPage = nextUrl.pathname === "/"
+      const isPublicPage = nextUrl.pathname === "/" || nextUrl.pathname === "/groups/join"
 
       if (isOnLoginPage) {
         if (isLoggedIn) {

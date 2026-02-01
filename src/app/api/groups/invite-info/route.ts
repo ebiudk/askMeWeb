@@ -1,13 +1,8 @@
-import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
+import { getInviteInfo } from "@/services/groupService"
 import { NextResponse } from "next/server"
 
 export async function GET(req: Request) {
-  const session = await auth()
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
-
   const { searchParams } = new URL(req.url)
   const token = searchParams.get("token")
 
@@ -16,23 +11,13 @@ export async function GET(req: Request) {
   }
 
   try {
-    const inviteToken = await prisma.inviteToken.findUnique({
-      where: { token },
-      include: {
-        group: {
-          select: {
-            id: true,
-            name: true,
-          },
-        },
-      },
-    })
+    const group = await getInviteInfo(token)
 
-    if (!inviteToken || inviteToken.expires < new Date()) {
+    if (!group) {
       return NextResponse.json({ error: "Invalid or expired invite token" }, { status: 404 })
     }
 
-    return NextResponse.json({ group: inviteToken.group })
+    return NextResponse.json({ group })
   } catch (error) {
     console.error("Invite info fetch error:", error)
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })

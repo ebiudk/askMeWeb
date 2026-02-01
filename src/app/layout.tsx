@@ -5,6 +5,7 @@ import AuthProvider from "@/components/auth-provider";
 import Notification from "@/components/Notification"; // Notification を追加
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://ask-me.ebiudk.link"),
   title: "AskMe! Web",
   description: "Real-time VRChat log monitoring and instance tracking.",
   icons: {
