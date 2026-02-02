@@ -36,7 +36,7 @@ async function GroupDetail({ id, userId }: { id: string; userId: string }) {
         </div>
       </div>
 
-      <div className="bg-white dark:bg-zinc-900 shadow-sm border dark:border-zinc-800 sm:rounded-md overflow-hidden">
+      <div className="bg-white dark:bg-zinc-900 shadow-sm border dark:border-zinc-800 sm:rounded-md">
         <ul className="divide-y divide-gray-200 dark:divide-zinc-800">
           {viewModel.members.map((member) => (
             <MemberRow 

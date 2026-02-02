@@ -44,7 +44,7 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
     setLoading(true)
 
     try {
-      const res = await fetch(`/api/groups/${groupId}/members/${membership.user.id}/role`, {
+      const res = await fetch(`/api/groups/${groupId}/members/${membership.userId}/role`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",
@@ -158,7 +158,7 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
   if (isRemoved) return null;
 
   return (
-    <li key={membership.userId} className="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-150 first:rounded-t-md last:rounded-b-md">
+    <li key={membership.userId} className={`relative hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-150 first:rounded-t-md last:rounded-b-md ${isOpen ? "z-10" : ""}`}>
       <div className="px-4 py-4 sm:px-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-y-3 sm:gap-y-0">
           <div className="flex items-center min-w-0">
@@ -181,7 +181,7 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
             )}
           </div>
 
-          <div className="flex items-center space-x-2 overflow-x-auto pb-1 sm:pb-0">
+          <div className="flex items-center space-x-2 pb-1 sm:pb-0">
             {membership.userId === currentUserId && (
               <button
                 onClick={handleToggleLocationShare}

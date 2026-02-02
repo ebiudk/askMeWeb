@@ -137,16 +137,8 @@ export async function 表示されていることを確認する(page: Page, tex
 }
 
 export async function ロールを変更する(page: Page, memberName: string, newRole: string) {
-  const memberRow = page.locator(`tr:has-text("${memberName}")`);
-  await memberRow.waitFor({ state: 'visible' });
-
-  const roleDropdownButton = memberRow.locator('button[aria-haspopup="menu"]'); // プルダウンメニューを開くボタンを特定
-  await roleDropdownButton.waitFor({ state: 'enabled' });
-  await roleDropdownButton.click();
-
-  const menuItem = page.getByRole('menuitem', { name: new RegExp(newRole) });
-  await menuItem.waitFor({ state: 'visible' });
-  await menuItem.click();
+  await page.locator(`li:has-text("${memberName}")`).locator('[role="button"]').click();
+  await page.getByRole('menuitem', { name: new RegExp(newRole) }).click();
 }
 
 /**
