@@ -5,10 +5,10 @@ VRChatの居場所（インスタンス情報）を特定のグループ内で�
 ## プロジェクト概要
 - **目的**: プライバシーを保ちつつ、特定のグループ（フレンドなど）に限定してVRChatの居場所を共有する。
 - **技術スタック**: Next.js 15 (App Router, Developed with Next.js 15.0.0-rc.0), Auth.js v5, Prisma, Tailwind CSS, PostgreSQL.
-- **居場所取得**: 外部の居場所取得アプリ（作成済み）からAPI経由で `vrchat_id` をキーに位置情報を更新する。
+- **居場所取得**: 外部の居場所取得アプリ（作成済み）からAPIキーを使用して位置情報を更新する。
 
 ## データモデル (Prisma Schema)
-- `User`: VRChat ID (`vrchat_id`), 現在のワールドID (`current_world_id`), 表示名 (`display_name`), 最終更新日時.
+- `User`: 現在のワールドID (`current_world_id`), 表示名 (`display_name`), 最終更新日時.
 - `Group`: グループ名.
 - `Membership`: ユーザーとグループの多対多関係。ロール（`admin`, `member`）を保持。
 - `Account`, `Session`, `VerificationToken`: Auth.js標準。
@@ -36,7 +36,7 @@ VRChatの居場所（インスタンス情報）を特定のグループ内で�
 - **表示**: `/groups/[id]` ページで、そのグループに属するメンバーの `world_name`, `updated_at` などを表示。
 
 ### 4. ユーザー設定
-- `/settings`: 自分の `vrchat_id` (usr_...) の設定や、APIキーの発行・再発行。
+- `/settings`: APIキーの発行・再発行。
 
 ## 実装上の注意
 - **Middleware**: Edge Runtimeの制限により、`middleware.ts` では `auth.config.ts` のみを使用し、Prisma（データベースアクセス）を避けること。
