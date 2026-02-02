@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Users, MapPin, PlusCircle } from "lucide-react";
 import { Suspense } from "react";
+import LocationShareToggle from "@/components/LocationShareToggle";
 
 async function GroupList({ userId }: { userId: string }) {
   const userGroups = await prisma.group.findMany({
@@ -63,21 +64,31 @@ async function GroupList({ userId }: { userId: string }) {
           return shouldShowLocation && m.user.location?.world_id;
         });
 
+        const myMembership = group.memberships.find((m: any) => m.user_id === userId);
+
         return (
           <Link
             key={group.id}
             href={`/groups/${group.id}`}
-            className="block bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow"
+            className="block bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow relative group"
           >
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-900 dark:text-white truncate">
+                <h2 className="text-lg font-semibold text-gray-900 dark:text-white truncate pr-2">
                   {group.name}
                 </h2>
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300">
-                  <Users className="mr-1 h-3 w-3" />
-                  {activeMembers.length} / {group.memberships.length}
-                </span>
+                <div className="flex items-center gap-2">
+                  {myMembership && (
+                    <LocationShareToggle 
+                      groupId={group.id} 
+                      initialValue={myMembership.is_location_shared} 
+                    />
+                  )}
+                  <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300">
+                    <Users className="mr-1 h-3 w-3" />
+                    {activeMembers.length} / {group.memberships.length}
+                  </span>
+                </div>
               </div>
 
               <div className="space-y-3">
