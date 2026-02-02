@@ -25,24 +25,28 @@ export default function RootLayout({
       <body className="bg-gray-50 min-h-screen">
         <AuthProvider>
           <Navbar />
-          <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+          <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 pb-20">
             {children}
           </main>
-          <footer className="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 border-t border-gray-200 text-sm text-gray-500 text-center space-y-2">
-            <div className="flex justify-center space-x-6 mb-2">
-              <a href="https://github.com/ebiudk/askMeWeb" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-gray-900 transition-colors">
-                <Github className="w-4 h-4" />
-                <span>Web</span>
-              </a>
-              <a href="https://github.com/ebiudk/askMeClient" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1.5 hover:text-gray-900 transition-colors">
-                <Github className="w-4 h-4" />
-                <span>Client</span>
-              </a>
+          <footer className="fixed bottom-0 left-0 right-0 bg-gray-50/90 backdrop-blur-sm border-t border-gray-200 py-2 px-4 text-[10px] text-gray-400 text-center z-40">
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-center gap-x-4 gap-y-0.5">
+              <div className="flex items-center gap-3">
+                <a href="https://github.com/ebiudk/askMeWeb" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-gray-600 transition-colors">
+                  <Github className="w-3 h-3" />
+                  <span>Web</span>
+                </a>
+                <a href="https://github.com/ebiudk/askMeClient" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-gray-600 transition-colors">
+                  <Github className="w-3 h-3" />
+                  <span>Client</span>
+                </a>
+                <span className="hidden md:inline">|</span>
+                <span>© 2025 AskMe!</span>
+              </div>
+              <p className="leading-tight opacity-80">
+                AskMe! はVRChat Inc.が公式に作成・承認したものではなく、VRChat Inc.の見解・意見を反映したものではありません。<br />
+                VRChatはVRChat Inc.の商標または登録商標です。
+              </p>
             </div>
-            <p>© 2025 AskMe! - All Rights Reserved</p>
-            <p className="max-w-3xl mx-auto leading-relaxed text-xs">
-              AskMe! はVRChat Inc.が公式に作成・承認したものではなく、VRChat Inc.の見解・意見を反映したものではありません。VRChatはVRChat Inc.の商標または登録商標です。
-            </p>
           </footer>
           <Notification />
           <FeedbackButton />
