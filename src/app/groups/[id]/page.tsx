@@ -1,87 +1,34 @@
 import { auth } from "@/auth"
-import { prisma } from "@/lib/prisma"
 import { notFound, redirect } from "next/navigation"
 import Invitation from "@/components/Invitation"
 import MemberRow from "@/components/MemberRow"
 import GroupSettings from "@/components/GroupSettings"
 import { Suspense } from "react"
+import { getGroupById } from "@/services/groupService"
+import { createGroupViewModel } from "@/view-models/GroupViewModel"
 
 async function GroupDetail({ id, userId }: { id: string; userId: string }) {
-  const group = await prisma.group.findUnique({
-    where: { id },
-    include: {
-      memberships: {
-        select: {
-          id: true,
-          role: true,
-          user_id: true,
-          is_location_shared: true,
-          user: {
-            select: {
-              id: true,
-              name: true,
-              display_name: true,
-              location: {
-                select: {
-                  world_id: true,
-                  world_name: true,
-                  instance_id: true,
-                  is_hidden: true,
-                  updated_at: true,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  })
+  const group = await getGroupById(id)
 
   if (!group) notFound()
 
-  // Filter location data based on is_location_shared and is_hidden
-  const sanitizedMemberships = group.memberships.map((m: any) => {
-    const isOwnLocation = m.user_id === userId
-    const shouldShowLocation = isOwnLocation || (m.is_location_shared && !m.user.location?.is_hidden)
+  // Domain logic check
+  if (!group.isMember(userId)) redirect("/")
 
-    return {
-      ...m,
-      user: {
-        ...m.user,
-        location: shouldShowLocation ? m.user.location : null,
-      },
-    }
-  })
+  // View Model: Transform domain model to view model (includes sanitization logic)
+  const viewModel = createGroupViewModel(group, userId)
 
-  // Sort memberships: admin -> co-admin -> member, then by name
-  const rolePriority: { [key: string]: number } = {
-    admin: 0,
-    "co-admin": 1,
-    member: 2,
-  }
-
-  sanitizedMemberships.sort((a: any, b: any) => {
-    const priorityA = rolePriority[a.role] ?? 3
-    const priorityB = rolePriority[b.role] ?? 3
-    if (priorityA !== priorityB) return priorityA - priorityB
-    const nameA = a.user.display_name || a.user.name || ""
-    const nameB = b.user.display_name || b.user.name || ""
-    return nameA.localeCompare(nameB)
-  })
-
-  // Check membership
-  const myMembership = sanitizedMemberships.find((m: any) => m.user_id === userId)
+  const myMembership = viewModel.members.find((m) => m.userId === userId)
   if (!myMembership) redirect("/")
 
-  const isAdmin = myMembership.role === "admin"
-  const isManagement = isAdmin || myMembership.role === "co-admin"
+  const isManagement = myMembership.role === "admin" || myMembership.role === "co-admin"
 
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-start">
         <div className="flex-1">
           <GroupSettings 
-            group={{ id: group.id, name: group.name, owner_id: group.owner_id }} 
+            group={{ id: viewModel.id, name: viewModel.name, owner_id: group.ownerId }} 
             currentUserId={userId}
             isAdmin={isManagement}
           />
@@ -91,11 +38,11 @@ async function GroupDetail({ id, userId }: { id: string; userId: string }) {
 
       <div className="bg-white dark:bg-zinc-900 shadow-sm border dark:border-zinc-800 sm:rounded-md overflow-hidden">
         <ul className="divide-y divide-gray-200 dark:divide-zinc-800">
-          {sanitizedMemberships.map((membership: any) => (
+          {viewModel.members.map((member) => (
             <MemberRow 
-              key={membership.user.id} 
+              key={member.userId} 
               groupId={id}
-              membership={membership}
+              membership={member}
               currentUserRole={myMembership.role}
               currentUserId={userId}
             />
@@ -105,6 +52,8 @@ async function GroupDetail({ id, userId }: { id: string; userId: string }) {
     </div>
   )
 }
+
+
 
 function GroupDetailSkeleton() {
   return (

@@ -6,8 +6,11 @@ import { Page, expect, APIRequestContext } from '@playwright/test';
 export async function ログインする(page: Page, username?: string) {
   const url = username ? `/login?username=${username}` : '/login';
   await page.goto(url);
+  await page.waitForLoadState('domcontentloaded');
+  await page.getByTestId('test-login-button').waitFor({ state: 'visible' });
   await page.getByTestId('test-login-button').click();
   await expect(page).toHaveURL(/\/$/);
+  await page.waitForLoadState('domcontentloaded');
   // ログイン後のコンテンツ読み込みを待つ
   await expect(page.getByText('ダッシュボード')).toBeVisible();
 }
@@ -20,7 +23,7 @@ export async function グループを作成する(page: Page, groupName: string)
   await page.waitForSelector('input#name');
   await page.fill('input#name', groupName);
   await page.click('button[type="submit"]');
-  await expect(page).toHaveURL(/\/$/);
+  await expect(page).toHaveURL(/\/groups\/[a-zA-Z0-9_-]+/);
   await expect(page.getByText(groupName)).toBeVisible();
 }
 
@@ -29,7 +32,9 @@ export async function グループを作成する(page: Page, groupName: string)
  */
 export async function グループ詳細ページを開く(page: Page, groupName: string) {
   await page.goto('/');
+  await page.locator(`text=${groupName}`).waitFor({ state: 'visible' });
   await page.click(`text=${groupName}`);
+  await page.waitForLoadState('domcontentloaded');
   await expect(page).toHaveURL(/\/groups\/[a-zA-Z0-9_-]+/);
 }
 
@@ -88,6 +93,7 @@ export async function APIキーを発行する(page: Page): Promise<string> {
   await generateButton.click();
 
   const apiKeyInput = page.locator('input[readonly]');
+  await apiKeyInput.waitFor({ state: 'visible' });
   await expect(apiKeyInput).not.toHaveValue('未発行', { timeout: 10000 });
   return await apiKeyInput.inputValue();
 }
@@ -130,12 +136,17 @@ export async function 表示されていることを確認する(page: Page, tex
   await expect(page.getByText(text)).toBeVisible();
 }
 
-/**
- * メンバーのロールを変更します。
- */
-export async function ロールを変更する(page: Page, newRole: string) {
-  await page.getByRole('button', { name: 'メンバー', exact: true }).click();
-  await page.getByRole('menuitem', { name: new RegExp(newRole) }).click();
+export async function ロールを変更する(page: Page, memberName: string, newRole: string) {
+  const memberRow = page.locator(`tr:has-text("${memberName}")`);
+  await memberRow.waitFor({ state: 'visible' });
+
+  const roleDropdownButton = memberRow.locator('button[aria-haspopup="menu"]'); // プルダウンメニューを開くボタンを特定
+  await roleDropdownButton.waitFor({ state: 'enabled' });
+  await roleDropdownButton.click();
+
+  const menuItem = page.getByRole('menuitem', { name: new RegExp(newRole) });
+  await menuItem.waitFor({ state: 'visible' });
+  await menuItem.click();
 }
 
 /**

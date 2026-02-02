@@ -1,49 +1,17 @@
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
 import Link from "next/link";
 import Image from "next/image";
 import { Users, MapPin, PlusCircle } from "lucide-react";
 import { Suspense } from "react";
 import LocationShareToggle from "@/components/LocationShareToggle";
+import { getUserGroups } from "@/services/groupService";
+import { createGroupViewModel } from "@/view-models/GroupViewModel";
 
 async function GroupList({ userId }: { userId: string }) {
-  const userGroups = await prisma.group.findMany({
-    where: {
-      memberships: {
-        some: {
-          user_id: userId,
-        },
-      },
-    },
-    include: {
-      memberships: {
-        select: {
-          id: true,
-          user_id: true,
-          is_location_shared: true,
-          user: {
-            select: {
-              id: true,
-              name: true,
-              display_name: true,
-              location: {
-                select: {
-                  world_id: true,
-                  world_name: true,
-                  is_hidden: true,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-  });
+  const groups = await getUserGroups(userId);
+  const viewModels = groups.map(g => createGroupViewModel(g, userId));
 
-  if (userGroups.length === 0) {
+  if (viewModels.length === 0) {
     return (
       <div className="text-center py-20 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-lg shadow-sm">
         <Users className="mx-auto h-12 w-12 text-gray-400 dark:text-zinc-600" />
@@ -57,14 +25,9 @@ async function GroupList({ userId }: { userId: string }) {
 
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      {userGroups.map((group: any) => {
-        const activeMembers = group.memberships.filter((m: any) => {
-          const isOwnLocation = m.user_id === userId;
-          const shouldShowLocation = isOwnLocation || (m.is_location_shared && !m.user.location?.is_hidden);
-          return shouldShowLocation && m.user.location?.world_id;
-        });
-
-        const myMembership = group.memberships.find((m: any) => m.user_id === userId);
+      {viewModels.map((group) => {
+        const myMembership = group.members.find(m => m.userId === userId);
+        const activeMembers = group.members.filter(m => m.location?.isOnline);
 
         return (
           <Link
@@ -81,12 +44,12 @@ async function GroupList({ userId }: { userId: string }) {
                   {myMembership && (
                     <LocationShareToggle 
                       groupId={group.id} 
-                      initialValue={myMembership.is_location_shared} 
+                      initialValue={myMembership.isLocationShared} 
                     />
                   )}
                   <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300">
                     <Users className="mr-1 h-3 w-3" />
-                    {activeMembers.length} / {group.memberships.length}
+                    {activeMembers.length} / {group.members.length}
                   </span>
                 </div>
               </div>
@@ -97,19 +60,19 @@ async function GroupList({ userId }: { userId: string }) {
                 </p>
                 {activeMembers.length > 0 ? (
                   <div className="space-y-2">
-                    {activeMembers.slice(0, 3).map((membership: any) => (
+                    {activeMembers.slice(0, 3).map((member) => (
                       <div
-                        key={membership.id}
+                        key={member.userId}
                         className="flex items-start gap-2 text-sm"
                       >
                         <div className="mt-1 h-2 w-2 rounded-full bg-green-500 shrink-0" />
                         <div className="min-w-0 flex-1">
                           <p className="font-medium text-gray-900 dark:text-zinc-100 truncate">
-                            {membership.user.display_name || membership.user.name}
+                            {member.name}
                           </p>
                           <p className="text-xs text-gray-500 dark:text-zinc-400 truncate flex items-center">
                             <MapPin className="mr-1 h-3 w-3" />
-                            {membership.user.location?.world_name}
+                            {member.location?.worldName}
                           </p>
                         </div>
                       </div>

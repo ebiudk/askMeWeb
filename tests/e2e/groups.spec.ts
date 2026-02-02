@@ -79,7 +79,9 @@ test.describe('グループ管理機能', () => {
 
     // 4. ユーザーAがユーザーBのロールを「共同管理者」に変更
     await pageA.reload(); // メンバー一覧を更新
-    await ロールを変更する(pageA, '共同管理者');
+    await 表示されていることを確認する(pageA, 'member-user');
+    await ロールを変更する(pageA, 'member-user', '共同管理者');
+    await pageA.screenshot({ path: 'playwright-report/screenshot-after-role-change.png' });
     
     // 変更が反映されたか確認
     await 表示されていることを確認する(pageA, '共管');

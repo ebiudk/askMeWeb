@@ -1,6 +1,7 @@
 import { auth } from "@/auth"
-import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
+import { getGroupById, updateGroup, deleteGroup } from "@/services/groupService"
+import { createGroupViewModel } from "@/view-models/GroupViewModel"
 
 export async function GET(
   req: Request,
@@ -12,65 +13,22 @@ export async function GET(
   }
 
   const { id } = await params
-
-  const group = await prisma.group.findUnique({
-    where: { id },
-    include: {
-      memberships: {
-        select: {
-          id: true,
-          role: true,
-          user_id: true,
-          is_location_shared: true,
-          user: {
-            select: {
-              id: true,
-              display_name: true,
-              location: {
-                select: {
-                  world_id: true,
-                  world_name: true,
-                  instance_id: true,
-                  is_hidden: true,
-                  updated_at: true,
-                },
-              },
-            },
-          },
-        },
-      },
-    },
-  })
+  const group = await getGroupById(id)
 
   if (!group) {
     return NextResponse.json({ error: "Group not found" }, { status: 404 })
   }
 
-  // Check if user is a member
-  const currentUserId = session.user!.id
-  const isMember = group.memberships.some((m) => m.user_id === currentUserId)
-  if (!isMember) {
+  // Domain logic: Check if user is a member
+  const currentUserId = session.user.id
+  if (!group.isMember(currentUserId)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
-  // Filter location data based on is_location_shared and is_hidden
-  const sanitizedGroup = {
-    ...group,
-    memberships: group.memberships.map((m) => {
-      const isOwnLocation = m.user_id === currentUserId
-      const shouldShowLocation = isOwnLocation || (m.is_location_shared && !m.user.location?.is_hidden)
+  // View Model: Transform domain model to view model (includes sanitization logic)
+  const viewModel = createGroupViewModel(group, currentUserId)
 
-      return {
-        ...m,
-        user: {
-          ...m.user,
-          location: shouldShowLocation ? m.user.location : null,
-        },
-      }
-    }),
-  }
-
-  return NextResponse.json({ group: sanitizedGroup })
+  return NextResponse.json({ group: viewModel })
 }
 
 export async function PATCH(
@@ -89,26 +47,19 @@ export async function PATCH(
     return NextResponse.json({ error: "Name is required" }, { status: 400 })
   }
 
-  // Check if user is an admin
-  const membership = await prisma.membership.findUnique({
-    where: {
-      group_id_user_id: {
-        group_id: id,
-        user_id: session.user.id,
-      },
-    },
-  })
+  const group = await getGroupById(id)
+  if (!group) {
+    return NextResponse.json({ error: "Group not found" }, { status: 404 })
+  }
 
-  if (!membership || membership.role !== "admin") {
+  // Domain logic: Check if user is an admin
+  if (!group.isAdmin(session.user.id)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
   try {
-    const group = await prisma.group.update({
-      where: { id },
-      data: { name },
-    })
-    return NextResponse.json(group)
+    const updated = await updateGroup(id, name)
+    return NextResponse.json(updated)
   } catch (error) {
     console.error("Group update error:", error)
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
@@ -125,25 +76,19 @@ export async function DELETE(
   }
 
   const { id } = await params
-
-  // Only owner can delete group
-  const group = await prisma.group.findUnique({
-    where: { id },
-    select: { owner_id: true },
-  })
+  const group = await getGroupById(id)
 
   if (!group) {
     return NextResponse.json({ error: "Group not found" }, { status: 404 })
   }
 
-  if (group.owner_id !== session.user.id) {
+  // Domain logic: Only admin can delete group
+  if (!group.isAdmin(session.user.id)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
   try {
-    await prisma.group.delete({
-      where: { id },
-    })
+    await deleteGroup(id)
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("Group deletion error:", error)

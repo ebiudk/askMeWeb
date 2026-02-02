@@ -4,32 +4,18 @@ import { useState, useRef, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { ChevronDownIcon, CheckIcon, TrashIcon } from "@heroicons/react/20/solid"
 
+import { MemberViewModel } from "@/view-models/MemberViewModel"
+
 interface MemberRowProps {
   groupId: string
-  membership: {
-    id: string
-    role: string
-    is_location_shared: boolean
-    user: {
-      id: string
-      name: string | null
-      display_name: string | null
-      location: {
-        world_id: string | null
-        world_name: string | null
-        instance_id: string | null
-        is_hidden: boolean
-        updated_at: Date | string | null
-      } | null
-    }
-  }
+  membership: MemberViewModel
   currentUserRole: string
   currentUserId: string
 }
 
 export default function MemberRow({ groupId, membership, currentUserRole, currentUserId }: MemberRowProps) {
   const [localRole, setLocalRole] = useState(membership.role)
-  const [isLocationShared, setIsLocationShared] = useState(membership.is_location_shared)
+  const [isLocationShared, setIsLocationShared] = useState(membership.isLocationShared)
   const [isRemoved, setIsRemoved] = useState(false)
   const [loading, setLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
@@ -111,17 +97,17 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
   }
 
   const handleRemoveMember = async () => {
-    const isSelf = membership.user.id === currentUserId
+    const isSelf = membership.userId === currentUserId
     const confirmMessage = isSelf 
       ? "本当にこのグループを抜けますか？" 
-      : `${membership.user.display_name || membership.user.name} をグループから削除しますか？`
+      : `${membership.name} をグループから削除しますか？`
     
     if (!confirm(confirmMessage)) return
 
     setIsRemoved(true) // Optimistic update
     setLoading(true)
     try {
-      const res = await fetch(`/api/groups/${groupId}/members/${membership.user.id}/role`, {
+      const res = await fetch(`/api/groups/${groupId}/members/${membership.userId}/role`, {
         method: "DELETE",
       })
 
@@ -144,7 +130,7 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
   }
 
   const canManage = (myRole: string, targetRole: string) => {
-    if (membership.user.id === currentUserId) return false // Cannot change own role here
+    if (membership.userId === currentUserId) return false // Cannot change own role here
     if (myRole === "admin") return true
     if (myRole === "co-admin") {
       // Co-admin can manage anyone who is not an admin
@@ -154,7 +140,7 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
   }
 
   const canRemove = (myRole: string, targetRole: string) => {
-    if (membership.user.id === currentUserId) return true // Can always leave
+    if (membership.userId === currentUserId) return true // Can always leave
     if (myRole === "admin") return true
     if (myRole === "co-admin") return targetRole === "member"
     return false
@@ -172,12 +158,12 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
   if (isRemoved) return null;
 
   return (
-    <li key={membership.user.id} className="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-150 first:rounded-t-md last:rounded-b-md">
+    <li key={membership.userId} className="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-150 first:rounded-t-md last:rounded-b-md">
       <div className="px-4 py-4 sm:px-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-y-3 sm:gap-y-0">
           <div className="flex items-center min-w-0">
             <p className="text-sm font-semibold text-gray-900 dark:text-zinc-100 truncate">
-              {membership.user.display_name || membership.user.name || "不明なユーザー"}
+              {membership.name}
             </p>
             <div className="ml-2 sm:ml-3 flex-shrink-0 flex">
               <p className={`px-2 py-0.5 inline-flex text-[10px] sm:text-xs leading-5 font-medium rounded-full ${
@@ -196,7 +182,7 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
           </div>
 
           <div className="flex items-center space-x-2 overflow-x-auto pb-1 sm:pb-0">
-            {membership.user.id === currentUserId && (
+            {membership.userId === currentUserId && (
               <button
                 onClick={handleToggleLocationShare}
                 disabled={loading}
@@ -263,7 +249,7 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
                 disabled={loading}
                 className="inline-flex items-center px-2 py-1.5 border border-transparent text-xs font-medium rounded text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50"
               >
-                {membership.user.id === currentUserId ? "脱退する" : "削除"}
+                {membership.userId === currentUserId ? "脱退する" : "削除"}
               </button>
             )}
 
@@ -271,7 +257,7 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
               <button
                 onClick={handleRemoveMember}
                 disabled={loading}
-                title={membership.user.id === currentUserId ? "脱退する" : "メンバーを削除"}
+                title={membership.userId === currentUserId ? "脱退する" : "メンバーを削除"}
                 className="p-1.5 text-gray-400 hover:text-red-600 rounded-md hover:bg-red-50 transition-colors duration-150 disabled:opacity-50"
               >
                 <TrashIcon className="h-5 w-5" />
@@ -283,21 +269,17 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
           <div className="sm:flex">
             <p className="flex items-center text-sm text-gray-500 dark:text-zinc-400">
               居場所: {
-                (!membership.is_location_shared && membership.user.id !== currentUserId)
-                ? (
-                  <span className="text-gray-400 dark:text-zinc-600 italic">非公開設定</span>
-                )
-                : (membership.user.location?.is_hidden || !membership.user.location?.world_name) 
+                (!membership.location || !membership.location.isOnline) 
                 ? (
                   <span title="VRChatがオフライン、もしくはAskMe!を起動していません" className="cursor-help text-gray-400 dark:text-zinc-500">
                     オフライン
                   </span>
                 )
-                : <span className="text-gray-900 dark:text-zinc-100">{membership.user.location.world_name}</span>
+                : <span className="text-gray-900 dark:text-zinc-100">{membership.location.worldName}</span>
               }
-              {((membership.is_location_shared || membership.user.id === currentUserId) && membership.user.location && !membership.user.location.is_hidden && membership.user.location.world_id) && (
+              {(membership.location?.isOnline && !membership.location.isHidden && membership.location.worldId) && (
                 <a 
-                  href={`https://vrchat.com/home/launch?worldId=${membership.user.location.world_id}${membership.user.location.instance_id ? `&instanceId=${membership.user.location.instance_id}` : ""}`}
+                  href={`https://vrchat.com/home/launch?worldId=${membership.location.worldId}${membership.location.instanceId ? `&instanceId=${membership.location.instanceId}` : ""}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="ml-2 inline-flex items-center px-3 py-1 sm:px-6 sm:py-2 border border-transparent text-xs sm:text-sm font-bold rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all active:scale-95"
@@ -310,8 +292,8 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
           <div className="mt-2 flex items-center text-sm text-gray-500 dark:text-zinc-500 sm:mt-0">
             <p>
               最終更新:{" "}
-              {membership.user.location?.updated_at
-                ? new Date(membership.user.location.updated_at).toLocaleString("ja-JP")
+              {membership.location?.updatedAt
+                ? new Date(membership.location.updatedAt).toLocaleString("ja-JP")
                 : "なし"}
             </p>
           </div>

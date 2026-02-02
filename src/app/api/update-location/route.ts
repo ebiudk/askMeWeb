@@ -1,5 +1,6 @@
-import { prisma } from "@/lib/prisma"
 import { NextResponse } from "next/server"
+import { getUserByApiKey, updateUserLocation } from "@/services/userService"
+import { Location } from "@/domain/models/Location"
 
 export async function POST(req: Request) {
   try {
@@ -11,43 +12,26 @@ export async function POST(req: Request) {
     const { current_world_id, current_world_name, current_instance_id, display_name } = await req.json()
 
     // Find user by API key
-    const user = await prisma.user.findUnique({
-      where: { api_key: apiKey },
-    })
+    const user = await getUserByApiKey(apiKey)
 
     if (!user) {
       return NextResponse.json({ error: "Invalid API key" }, { status: 401 })
     }
 
-    // If current_world_id is null or empty, it means clearing location
-    const isClearing = !current_world_id || current_world_id === ""
-    const is_location_hidden = current_world_id === "private"
+    // Domain logic: create location object
+    const newLocation = Location.createFromVRChat(
+      current_world_id,
+      current_world_name,
+      current_instance_id
+    )
 
-    const updatedUser = await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        display_name: display_name || undefined,
-        location: {
-          upsert: {
-            create: {
-              world_id: isClearing ? null : current_world_id,
-              world_name: isClearing ? null : current_world_name,
-              instance_id: isClearing ? null : current_instance_id,
-              is_hidden: is_location_hidden,
-            },
-            update: {
-              world_id: isClearing ? null : current_world_id,
-              world_name: isClearing ? null : current_world_name,
-              instance_id: isClearing ? null : current_instance_id,
-              is_hidden: is_location_hidden,
-            },
-          },
-        },
-      },
-      include: { location: true },
-    })
+    // Domain logic: update user state (if we had more complex logic)
+    const updatedUser = user.updateLocation(newLocation)
 
-    return NextResponse.json({ success: true, user: updatedUser })
+    // Application logic: persist changes
+    await updateUserLocation(updatedUser.id, newLocation, display_name);
+
+    return NextResponse.json({ success: true })
   } catch (error) {
     console.error("Location update error:", error)
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 })
