@@ -53,6 +53,28 @@ export default async function LoginPage({
             X でログイン
           </button>
         </form>
+
+        {(process.env.NODE_ENV === "test" || process.env.ALLOW_TEST_AUTH === "true") && (
+          <form
+            action={async () => {
+              "use server"
+              const { username, callbackUrl } = await searchParams
+              await signIn("credentials", {
+                username: username || "test-user",
+                redirectTo: callbackUrl || "/",
+              })
+            }}
+            className="mt-4"
+          >
+            <button
+              type="submit"
+              data-testid="test-login-button"
+              className="flex w-full items-center justify-center gap-2 rounded-md bg-gray-200 px-3 py-2 text-sm font-semibold text-gray-900 hover:bg-gray-300 transition-colors"
+            >
+              テストユーザーでログイン
+            </button>
+          </form>
+        )}
       </div>
     </div>
   )

@@ -1,14 +1,12 @@
 import { test, expect } from '@playwright/test';
 
-test('has title and login link', async ({ page }) => {
+test('タイトルとログインリンクが表示されていること', async ({ page }) => {
   await page.goto('/');
 
-  // Expect a title "to contain" a substring.
-  // アプリケーションのタイトルやロゴに合わせて調整してください
+  // アプリケーションのタイトルを確認
   await expect(page).toHaveTitle(/AskMe!/);
 
-  // ログインページへのリンクがあるか確認（middlewareでリダイレクトされる可能性も考慮）
-  // 実際の実装に合わせてセレクターを調整してください
+  // ログインページへのリンクがあるか確認
   const loginLink = page.getByRole('link', { name: /login/i });
   if (await loginLink.isVisible()) {
     await loginLink.click();
@@ -16,10 +14,9 @@ test('has title and login link', async ({ page }) => {
   }
 });
 
-test('login page displays sign in options', async ({ page }) => {
+test('ログインページにサインインオプションが表示されていること', async ({ page }) => {
   await page.goto('/login');
 
-  // Auth.jsのログインボタンなどが表示されているか確認
-  // 複数のボタンがある場合は最初のものを確認するか、テキストで指定します
-  await expect(page.getByRole('button').first()).toBeVisible();
+  // テスト用ログインボタンなどが表示されているか確認
+  await expect(page.getByTestId('test-login-button')).toBeVisible();
 });
