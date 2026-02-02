@@ -17,11 +17,12 @@ export default {
               username: { label: "Username", type: "text" },
             },
             async authorize(credentials) {
-              if (credentials?.username) {
+              const username = credentials?.username
+              if (typeof username === "string") {
                 return {
-                  id: `id-${credentials.username}`,
-                  name: credentials.username,
-                  email: `${credentials.username}@example.com`,
+                  id: `id-${username}`,
+                  name: username,
+                  email: `${username}@example.com`,
                 }
               }
               return null
