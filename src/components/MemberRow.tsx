@@ -174,20 +174,20 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
   return (
     <li key={membership.user.id} className="hover:bg-gray-50 transition-colors duration-150 first:rounded-t-md last:rounded-b-md">
       <div className="px-4 py-4 sm:px-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-y-3 sm:gap-y-0">
+          <div className="flex items-center min-w-0">
             <p className="text-sm font-semibold text-gray-900 truncate">
               {membership.user.display_name || membership.user.name || "不明なユーザー"}
             </p>
-            <div className="ml-3 flex-shrink-0 flex">
-              <p className={`px-2.5 py-0.5 inline-flex text-xs leading-5 font-medium rounded-full ${
+            <div className="ml-2 sm:ml-3 flex-shrink-0 flex">
+              <p className={`px-2 py-0.5 inline-flex text-[10px] sm:text-xs leading-5 font-medium rounded-full ${
                 localRole === "admin" 
                   ? "bg-purple-100 text-purple-800 border border-purple-200" 
                   : localRole === "co-admin"
                   ? "bg-blue-100 text-blue-800 border border-blue-200"
                   : "bg-gray-100 text-gray-600 border border-gray-200"
               }`}>
-                {localRole === "admin" ? "管理者" : localRole === "co-admin" ? "共同管理者" : "メンバー"}
+                {localRole === "admin" ? "管理者" : localRole === "co-admin" ? "共管" : "会員"}
               </p>
             </div>
             {loading && (
@@ -195,18 +195,18 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
             )}
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 overflow-x-auto pb-1 sm:pb-0">
             {membership.user.id === currentUserId && (
               <button
                 onClick={handleToggleLocationShare}
                 disabled={loading}
-                className={`inline-flex items-center px-2 py-1.5 border text-xs font-medium rounded transition-colors duration-150 ${
+                className={`inline-flex items-center whitespace-nowrap px-2 py-1 border text-[10px] sm:text-xs font-medium rounded transition-colors duration-150 ${
                   isLocationShared 
                     ? "border-green-300 text-green-700 bg-green-50 hover:bg-green-100" 
                     : "border-gray-300 text-gray-700 bg-gray-50 hover:bg-gray-100"
                 }`}
               >
-                {isLocationShared ? "🔓グループに公開中" : "🔒グループに非公開"}
+                {isLocationShared ? "🔓公開中" : "🔒非公開"}
               </button>
             )}
 
@@ -300,7 +300,7 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
                   href={`https://vrchat.com/home/launch?worldId=${membership.user.location.world_id}${membership.user.location.instance_id ? `&instanceId=${membership.user.location.instance_id}` : ""}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="ml-4 inline-flex items-center px-8 py-3 border border-transparent text-lg font-bold rounded-lg shadow-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all active:scale-95"
+                  className="ml-2 inline-flex items-center px-3 py-1 sm:px-6 sm:py-2 border border-transparent text-xs sm:text-sm font-bold rounded shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all active:scale-95"
                 >
                   Join
                 </a>

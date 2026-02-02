@@ -11,19 +11,20 @@ export default async function Navbar() {
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="flex items-center gap-2">
               <img src="/logo.png" alt="AskMe Logo" className="h-8 w-8" />
-              <span className="text-2xl font-bold text-indigo-600">AskMe! Web</span>
+              <span className="text-xl sm:text-2xl font-bold text-indigo-600 hidden sm:inline">AskMe! Web</span>
             </Link>
-            <Link href="https://github.com/ebiudk/askMeClient/releases/latest" target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-3 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 ml-4">
-              クライアントダウンロード
+            <Link href="https://github.com/ebiudk/askMeClient/releases/latest" target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-2 sm:px-3 py-1.5 sm:py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 ml-2 sm:ml-4">
+              <span className="sm:hidden">DL</span>
+              <span className="hidden sm:inline">クライアントダウンロード</span>
             </Link>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 sm:gap-4">
             {session ? (
               <>
                 <Link href="/settings" className="text-sm text-gray-500 hover:text-gray-700">
                   設定
                 </Link>
-                <span className="text-gray-700">{session.user?.name || session.user?.email}</span>
+                <span className="text-gray-700 hidden md:inline truncate max-w-[100px]">{session.user?.name || session.user?.email}</span>
                 <form
                   action={async () => {
                     "use server"

@@ -26,11 +26,11 @@ export default function RootLayout({
       <body className="bg-gray-50 min-h-screen">
         <AuthProvider>
           <Navbar />
-          <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8 pb-20">
+          <main className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             {children}
           </main>
-          <footer className="fixed bottom-0 left-0 right-0 bg-gray-50/90 backdrop-blur-sm border-t border-gray-200 py-2 px-4 text-[10px] text-gray-400 text-center z-40">
-            <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-center gap-x-4 gap-y-0.5">
+          <footer className="bg-gray-50 border-t border-gray-200 py-6 px-4 text-[10px] text-gray-400 text-center">
+            <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-center gap-x-4 gap-y-2">
               <div className="flex items-center gap-3">
                 <a href="https://github.com/ebiudk/askMeWeb" target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 hover:text-gray-600 transition-colors">
                   <Github className="w-3 h-3" />
