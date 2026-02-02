@@ -11,10 +11,25 @@ async function GroupDetail({ id, userId }: { id: string; userId: string }) {
     where: { id },
     include: {
       memberships: {
-        include: {
+        select: {
+          id: true,
+          role: true,
+          user_id: true,
+          is_location_shared: true,
           user: {
-            include: {
-              location: true,
+            select: {
+              id: true,
+              name: true,
+              display_name: true,
+              location: {
+                select: {
+                  world_id: true,
+                  world_name: true,
+                  instance_id: true,
+                  is_hidden: true,
+                  updated_at: true,
+                },
+              },
             },
           },
         },
@@ -24,6 +39,20 @@ async function GroupDetail({ id, userId }: { id: string; userId: string }) {
 
   if (!group) notFound()
 
+  // Filter location data based on is_location_shared and is_hidden
+  const sanitizedMemberships = group.memberships.map((m: any) => {
+    const isOwnLocation = m.user_id === userId
+    const shouldShowLocation = isOwnLocation || (m.is_location_shared && !m.user.location?.is_hidden)
+
+    return {
+      ...m,
+      user: {
+        ...m.user,
+        location: shouldShowLocation ? m.user.location : null,
+      },
+    }
+  })
+
   // Sort memberships: admin -> co-admin -> member, then by name
   const rolePriority: { [key: string]: number } = {
     admin: 0,
@@ -31,7 +60,7 @@ async function GroupDetail({ id, userId }: { id: string; userId: string }) {
     member: 2,
   }
 
-  group.memberships.sort((a: any, b: any) => {
+  sanitizedMemberships.sort((a: any, b: any) => {
     const priorityA = rolePriority[a.role] ?? 3
     const priorityB = rolePriority[b.role] ?? 3
     if (priorityA !== priorityB) return priorityA - priorityB
@@ -41,7 +70,7 @@ async function GroupDetail({ id, userId }: { id: string; userId: string }) {
   })
 
   // Check membership
-  const myMembership = group.memberships.find((m: any) => m.user_id === userId)
+  const myMembership = sanitizedMemberships.find((m: any) => m.user_id === userId)
   if (!myMembership) redirect("/")
 
   const isAdmin = myMembership.role === "admin"
@@ -62,7 +91,7 @@ async function GroupDetail({ id, userId }: { id: string; userId: string }) {
 
       <div className="bg-white shadow sm:rounded-md">
         <ul className="divide-y divide-gray-200">
-          {group.memberships.map((membership: any) => (
+          {sanitizedMemberships.map((membership: any) => (
             <MemberRow 
               key={membership.user.id} 
               groupId={id}

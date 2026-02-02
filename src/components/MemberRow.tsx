@@ -9,6 +9,7 @@ interface MemberRowProps {
   membership: {
     id: string
     role: string
+    is_location_shared: boolean
     user: {
       id: string
       name: string | null
@@ -28,6 +29,8 @@ interface MemberRowProps {
 
 export default function MemberRow({ groupId, membership, currentUserRole, currentUserId }: MemberRowProps) {
   const [localRole, setLocalRole] = useState(membership.role)
+  const [isLocationShared, setIsLocationShared] = useState(membership.is_location_shared)
+  const [isRemoved, setIsRemoved] = useState(false)
   const [loading, setLoading] = useState(false)
   const [isOpen, setIsOpen] = useState(false)
   const dropdownRef = useRef<HTMLDivElement>(null)
@@ -78,6 +81,35 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
     }
   }
 
+  const handleToggleLocationShare = async () => {
+    const newValue = !isLocationShared
+    setIsLocationShared(newValue)
+    setLoading(true)
+
+    try {
+      const res = await fetch(`/api/groups/${groupId}/membership`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ is_location_shared: newValue }),
+      })
+
+      if (!res.ok) {
+        const data = await res.json()
+        alert(data.error || "Failed to update sharing setting")
+        setIsLocationShared(!newValue)
+      } else {
+        router.refresh()
+      }
+    } catch (error) {
+      alert("An error occurred")
+      setIsLocationShared(!newValue)
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleRemoveMember = async () => {
     const isSelf = membership.user.id === currentUserId
     const confirmMessage = isSelf 
@@ -86,6 +118,7 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
     
     if (!confirm(confirmMessage)) return
 
+    setIsRemoved(true) // Optimistic update
     setLoading(true)
     try {
       const res = await fetch(`/api/groups/${groupId}/members/${membership.user.id}/role`, {
@@ -95,6 +128,7 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
       if (!res.ok) {
         const data = await res.json()
         alert(data.error || "Failed to remove member")
+        setIsRemoved(false) // Revert
         setLoading(false)
       } else {
         if (isSelf) {
@@ -104,6 +138,7 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
       }
     } catch (error) {
       alert("An error occurred")
+      setIsRemoved(false) // Revert
       setLoading(false)
     }
   }
@@ -134,6 +169,8 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
     ...(currentUserRole === "admin" ? [{ id: "admin", label: "管理者", description: "全権限を保持" }] : []),
   ]
 
+  if (isRemoved) return null;
+
   return (
     <li key={membership.user.id} className="hover:bg-gray-50 transition-colors duration-150 first:rounded-t-md last:rounded-b-md">
       <div className="px-4 py-4 sm:px-6">
@@ -159,6 +196,20 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
           </div>
 
           <div className="flex items-center space-x-2">
+            {membership.user.id === currentUserId && (
+              <button
+                onClick={handleToggleLocationShare}
+                disabled={loading}
+                className={`inline-flex items-center px-2 py-1.5 border text-xs font-medium rounded transition-colors duration-150 ${
+                  isLocationShared 
+                    ? "border-green-300 text-green-700 bg-green-50 hover:bg-green-100" 
+                    : "border-gray-300 text-gray-700 bg-gray-50 hover:bg-gray-100"
+                }`}
+              >
+                {isLocationShared ? "🔓グループに公開中" : "🔒グループに非公開"}
+              </button>
+            )}
+
             {showManagement && (
               <div className="flex items-center relative" ref={dropdownRef}>
                 <button
@@ -232,7 +283,11 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
           <div className="sm:flex">
             <p className="flex items-center text-sm text-gray-500">
               居場所: {
-                (membership.user.location?.is_hidden || !membership.user.location?.world_name) 
+                (!membership.is_location_shared && membership.user.id !== currentUserId)
+                ? (
+                  <span className="text-gray-400 italic">非公開設定</span>
+                )
+                : (membership.user.location?.is_hidden || !membership.user.location?.world_name) 
                 ? (
                   <span title="VRChatがオフライン、もしくはAskMe!を起動していません" className="cursor-help">
                     オフライン
@@ -240,7 +295,7 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
                 )
                 : membership.user.location.world_name
               }
-              {membership.user.location && !membership.user.location.is_hidden && membership.user.location.world_id && (
+              {((membership.is_location_shared || membership.user.id === currentUserId) && membership.user.location && !membership.user.location.is_hidden && membership.user.location.world_id) && (
                 <a 
                   href={`https://vrchat.com/home/launch?worldId=${membership.user.location.world_id}${membership.user.location.instance_id ? `&instanceId=${membership.user.location.instance_id}` : ""}`}
                   target="_blank"

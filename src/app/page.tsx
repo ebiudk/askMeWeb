@@ -16,10 +16,22 @@ async function GroupList({ userId }: { userId: string }) {
     },
     include: {
       memberships: {
-        include: {
+        select: {
+          id: true,
+          user_id: true,
+          is_location_shared: true,
           user: {
-            include: {
-              location: true,
+            select: {
+              id: true,
+              name: true,
+              display_name: true,
+              location: {
+                select: {
+                  world_id: true,
+                  world_name: true,
+                  is_hidden: true,
+                },
+              },
             },
           },
         },
@@ -45,9 +57,11 @@ async function GroupList({ userId }: { userId: string }) {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {userGroups.map((group: any) => {
-        const activeMembers = group.memberships.filter(
-          (m: any) => m.user.location?.world_id && !m.user.location?.is_hidden
-        );
+        const activeMembers = group.memberships.filter((m: any) => {
+          const isOwnLocation = m.user_id === userId;
+          const shouldShowLocation = isOwnLocation || (m.is_location_shared && !m.user.location?.is_hidden);
+          return shouldShowLocation && m.user.location?.world_id;
+        });
 
         return (
           <Link

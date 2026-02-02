@@ -97,10 +97,11 @@ model InviteToken {
 }
 
 model Membership {
-  id       String @id @default(cuid())
-  group_id String
-  user_id  String
-  role     String @default("member") // admin, member
+  id                 String  @id @default(cuid())
+  group_id           String
+  user_id            String
+  role               String  @default("member") // admin, member
+  is_location_shared Boolean @default(true)
 
   group Group @relation(fields: [group_id], references: [id], onDelete: Cascade)
   user  User  @relation(fields: [user_id], references: [id], onDelete: Cascade)

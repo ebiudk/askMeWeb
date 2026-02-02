@@ -17,7 +17,11 @@ export async function GET(
     where: { id },
     include: {
       memberships: {
-        include: {
+        select: {
+          id: true,
+          role: true,
+          user_id: true,
+          is_location_shared: true,
           user: {
             select: {
               id: true,
@@ -43,12 +47,30 @@ export async function GET(
   }
 
   // Check if user is a member
-  const isMember = group.memberships.some((m: any) => m.user_id === session.user!.id)
+  const currentUserId = session.user!.id
+  const isMember = group.memberships.some((m) => m.user_id === currentUserId)
   if (!isMember) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 })
   }
 
-  return NextResponse.json({ group })
+  // Filter location data based on is_location_shared and is_hidden
+  const sanitizedGroup = {
+    ...group,
+    memberships: group.memberships.map((m) => {
+      const isOwnLocation = m.user_id === currentUserId
+      const shouldShowLocation = isOwnLocation || (m.is_location_shared && !m.user.location?.is_hidden)
+
+      return {
+        ...m,
+        user: {
+          ...m.user,
+          location: shouldShowLocation ? m.user.location : null,
+        },
+      }
+    }),
+  }
+
+  return NextResponse.json({ group: sanitizedGroup })
 }
 
 export async function PATCH(

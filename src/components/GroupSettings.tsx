@@ -16,18 +16,23 @@ interface GroupSettingsProps {
 
 export default function GroupSettings({ group, currentUserId, isAdmin }: GroupSettingsProps) {
   const [isEditing, setIsEditing] = useState(false);
+  const [displayName, setDisplayName] = useState(group.name);
   const [newName, setNewName] = useState(group.name);
   const [loading, setLoading] = useState(false);
+  const [isDeleted, setIsDeleted] = useState(false);
   const router = useRouter();
 
   const isOwner = group.owner_id === currentUserId;
 
   const handleRename = async () => {
-    if (!newName || newName === group.name) {
+    if (!newName || newName === displayName) {
       setIsEditing(false);
       return;
     }
 
+    const previousName = displayName;
+    setDisplayName(newName); // Optimistic update
+    setIsEditing(false);
     setLoading(true);
     try {
       const res = await fetch(`/api/groups/${group.id}`, {
@@ -36,22 +41,29 @@ export default function GroupSettings({ group, currentUserId, isAdmin }: GroupSe
         body: JSON.stringify({ name: newName }),
       });
 
-      if (res.ok) {
-        setIsEditing(false);
+      if (!res.ok) {
+        const data = await res.json();
+        alert(data.error || "Failed to rename group");
+        setDisplayName(previousName); // Revert
+        setNewName(previousName);
+      } else {
         router.refresh();
       }
     } catch (error) {
-      console.error("Failed to rename group:", error);
+      alert("An error occurred");
+      setDisplayName(previousName); // Revert
+      setNewName(previousName);
     } finally {
       setLoading(false);
     }
   };
 
   const handleDelete = async () => {
-    if (!confirm(`グループ「${group.name}」を削除してもよろしいですか？この操作は取り消せません。`)) {
+    if (!confirm(`グループ「${displayName}」を削除してもよろしいですか？この操作は取り消せません。`)) {
       return;
     }
 
+    setIsDeleted(true); // Optimistic update
     setLoading(true);
     try {
       const res = await fetch(`/api/groups/${group.id}`, {
@@ -61,15 +73,20 @@ export default function GroupSettings({ group, currentUserId, isAdmin }: GroupSe
       if (res.ok) {
         router.push('/');
         router.refresh();
+      } else {
+        const data = await res.json();
+        alert(data.error || "Failed to delete group");
+        setIsDeleted(false);
       }
     } catch (error) {
-      console.error("Failed to delete group:", error);
+      alert("An error occurred");
+      setIsDeleted(false);
     } finally {
       setLoading(false);
     }
   };
 
-  if (!isAdmin) return null;
+  if (!isAdmin || isDeleted) return null;
 
   return (
     <div className="flex items-center space-x-2">
@@ -92,7 +109,7 @@ export default function GroupSettings({ group, currentUserId, isAdmin }: GroupSe
           <button
             onClick={() => {
               setIsEditing(false);
-              setNewName(group.name);
+              setNewName(displayName);
             }}
             disabled={loading}
             className="p-1 text-gray-400 hover:text-gray-500"
@@ -102,7 +119,7 @@ export default function GroupSettings({ group, currentUserId, isAdmin }: GroupSe
         </div>
       ) : (
         <div className="flex items-center space-x-4">
-          <h1 className="text-3xl font-bold text-gray-900">{group.name}</h1>
+          <h1 className="text-3xl font-bold text-gray-900">{displayName}</h1>
           <div className="flex items-center space-x-1">
             <button
               onClick={() => setIsEditing(true)}
@@ -120,6 +137,9 @@ export default function GroupSettings({ group, currentUserId, isAdmin }: GroupSe
               >
                 <TrashIcon className="h-5 w-5" />
               </button>
+            )}
+            {loading && (
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-indigo-500 border-t-transparent"></div>
             )}
           </div>
         </div>
