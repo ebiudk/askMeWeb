@@ -96,7 +96,7 @@ export default function GroupSettings({ group, currentUserId, isAdmin }: GroupSe
             type="text"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            className="block w-full px-2 py-1 text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            className="block w-full px-2 py-1 text-sm border border-gray-300 dark:border-zinc-700 rounded-md bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             autoFocus
           />
           <button
@@ -119,11 +119,11 @@ export default function GroupSettings({ group, currentUserId, isAdmin }: GroupSe
         </div>
       ) : (
         <div className="flex items-center space-x-4">
-          <h1 className="text-3xl font-bold text-gray-900">{displayName}</h1>
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-zinc-50">{displayName}</h1>
           <div className="flex items-center space-x-1">
             <button
               onClick={() => setIsEditing(true)}
-              className="p-1 text-gray-400 hover:text-gray-500"
+              className="p-1 text-gray-400 dark:text-zinc-500 hover:text-gray-500 dark:hover:text-zinc-300"
               title="グループ名を変更"
             >
               <PencilIcon className="h-5 w-5" />
@@ -132,7 +132,7 @@ export default function GroupSettings({ group, currentUserId, isAdmin }: GroupSe
               <button
                 onClick={handleDelete}
                 disabled={loading}
-                className="p-1 text-red-400 hover:text-red-500"
+                className="p-1 text-red-400 hover:text-red-500 dark:hover:text-red-300"
                 title="グループを削除"
               >
                 <TrashIcon className="h-5 w-5" />

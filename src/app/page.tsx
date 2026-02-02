@@ -45,10 +45,10 @@ async function GroupList({ userId }: { userId: string }) {
 
   if (userGroups.length === 0) {
     return (
-      <div className="text-center py-20 bg-white dark:bg-gray-800 rounded-lg shadow">
-        <Users className="mx-auto h-12 w-12 text-gray-400" />
-        <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">所属グループがありません</h3>
-        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+      <div className="text-center py-20 bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-lg shadow-sm">
+        <Users className="mx-auto h-12 w-12 text-gray-400 dark:text-zinc-600" />
+        <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-zinc-100">所属グループがありません</h3>
+        <p className="mt-1 text-sm text-gray-500 dark:text-zinc-400">
           新しいグループを作成するか、招待コードで参加しましょう。
         </p>
       </div>
@@ -70,7 +70,7 @@ async function GroupList({ userId }: { userId: string }) {
           <Link
             key={group.id}
             href={`/groups/${group.id}`}
-            className="block bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-md transition-shadow relative group"
+            className="block bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-lg shadow-sm hover:shadow-md transition-shadow relative group"
           >
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
@@ -104,10 +104,10 @@ async function GroupList({ userId }: { userId: string }) {
                       >
                         <div className="mt-1 h-2 w-2 rounded-full bg-green-500 shrink-0" />
                         <div className="min-w-0 flex-1">
-                          <p className="font-medium text-gray-900 dark:text-white truncate">
+                          <p className="font-medium text-gray-900 dark:text-zinc-100 truncate">
                             {membership.user.display_name || membership.user.name}
                           </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate flex items-center">
+                          <p className="text-xs text-gray-500 dark:text-zinc-400 truncate flex items-center">
                             <MapPin className="mr-1 h-3 w-3" />
                             {membership.user.location?.world_name}
                           </p>
@@ -136,11 +136,11 @@ function GroupListSkeleton() {
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {[...Array(3)].map((_, i) => (
-        <div key={i} className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 animate-pulse">
-          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-3/4 mb-4"></div>
+        <div key={i} className="bg-white dark:bg-zinc-900 border dark:border-zinc-800 rounded-lg shadow-sm p-6 animate-pulse">
+          <div className="h-6 bg-gray-200 dark:bg-zinc-800 rounded w-3/4 mb-4"></div>
           <div className="space-y-3">
-            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
-            <div className="h-10 bg-gray-100 dark:bg-gray-800 rounded"></div>
+            <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded w-1/2"></div>
+            <div className="h-10 bg-gray-100 dark:bg-zinc-800 rounded"></div>
           </div>
         </div>
       ))}
@@ -153,7 +153,7 @@ export default async function Home() {
 
   if (!session) {
     return (
-      <div className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center bg-gray-50 px-4 py-12">
+      <div className="flex min-h-[calc(100vh-64px)] flex-col items-center justify-center bg-gray-50 dark:bg-zinc-950 px-4 py-12">
         <div className="text-center">
           <div className="flex justify-center mb-6">
             <Image
@@ -164,16 +164,16 @@ export default async function Home() {
               className="w-32 h-32"
             />
           </div>
-          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-6xl">
+          <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 dark:text-zinc-50 sm:text-6xl">
             AskMe! Web
           </h1>
-          <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400">
+          <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-zinc-400">
             VRChatの居場所を、信頼できる仲間内だけで共有。
           </p>
           <div className="mt-10 flex items-center justify-center gap-x-6">
             <Link
               href="/login"
-              className="rounded-md bg-blue-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
+              className="rounded-md bg-indigo-600 px-3.5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
             >
               ログインしてはじめる
             </Link>
@@ -190,7 +190,7 @@ export default async function Home() {
         <div className="flex gap-2">
           <Link
             href="/groups/new"
-            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none"
+            className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
           >
             <PlusCircle className="mr-2 h-4 w-4" />
             新規作成

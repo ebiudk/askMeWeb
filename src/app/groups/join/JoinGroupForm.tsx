@@ -75,10 +75,10 @@ export default function JoinGroupForm({ initialToken }: JoinGroupFormProps) {
 
   if (groupInfo) {
     return (
-      <div className="max-w-md mx-auto bg-white dark:bg-gray-800 p-8 rounded-lg shadow-md border border-gray-100 dark:border-gray-700">
-        <h1 className="text-2xl font-bold mb-4 text-center text-gray-900 dark:text-white">グループへの招待</h1>
+      <div className="max-w-md mx-auto bg-white dark:bg-zinc-900 p-8 rounded-lg shadow-md border border-gray-100 dark:border-zinc-800">
+        <h1 className="text-2xl font-bold mb-4 text-center text-gray-900 dark:text-zinc-50">グループへの招待</h1>
         <div className="mb-6 text-center">
-          <p className="text-lg text-gray-700 dark:text-gray-300">
+          <p className="text-lg text-gray-700 dark:text-zinc-400">
             <span className="font-bold text-indigo-600 dark:text-indigo-400">{groupInfo.name}</span>
             <br />
             グループに招待されています
@@ -95,7 +95,7 @@ export default function JoinGroupForm({ initialToken }: JoinGroupFormProps) {
           <button
             onClick={() => router.push("/")}
             disabled={loading}
-            className="w-full flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+            className="w-full flex justify-center py-2 px-4 border border-gray-300 dark:border-zinc-700 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
           >
             キャンセル
           </button>
@@ -106,7 +106,7 @@ export default function JoinGroupForm({ initialToken }: JoinGroupFormProps) {
 
   return (
     <div className="max-w-md mx-auto">
-      <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-white">グループに参加</h1>
+      <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-zinc-50">グループに参加</h1>
       <div className="bg-red-50 dark:bg-red-900/30 border-l-4 border-red-400 p-4 mb-4">
         <p className="text-sm text-red-700 dark:text-red-400">
           {error || "招待URLが無効か、有効期限が切れています。新しい招待URLを取得してください。"}
@@ -114,7 +114,7 @@ export default function JoinGroupForm({ initialToken }: JoinGroupFormProps) {
       </div>
       <button
         onClick={() => router.push("/")}
-        className="w-full flex justify-center py-2 px-4 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700"
+        className="w-full flex justify-center py-2 px-4 border border-gray-300 dark:border-zinc-700 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-zinc-300 bg-white dark:bg-zinc-900 hover:bg-gray-50 dark:hover:bg-zinc-800"
       >
         ダッシュボードへ戻る
       </button>

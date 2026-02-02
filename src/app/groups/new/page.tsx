@@ -35,10 +35,10 @@ export default function NewGroupPage() {
 
   return (
     <div className="max-w-md mx-auto">
-      <h1 className="text-2xl font-bold mb-6">新規グループ作成</h1>
+      <h1 className="text-2xl font-bold mb-6 text-gray-900 dark:text-zinc-50">新規グループ作成</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-zinc-400">
             グループ名
           </label>
           <input
@@ -46,7 +46,7 @@ export default function NewGroupPage() {
             id="name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+            className="mt-1 block w-full border border-gray-300 dark:border-zinc-700 rounded-md shadow-sm p-2 bg-white dark:bg-zinc-900 text-gray-900 dark:text-zinc-100"
             required
             placeholder="例: フレンド用"
           />

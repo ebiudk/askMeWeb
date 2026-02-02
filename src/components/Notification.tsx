@@ -36,12 +36,12 @@ function NotificationContent() {
 
   return (
     <div className="fixed bottom-4 right-4 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
-      <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-4 flex items-center gap-3">
+      <div className="bg-white dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-lg shadow-lg p-4 flex items-center gap-3">
         <div className="h-2 w-2 rounded-full bg-green-500" />
-        <p className="text-sm font-medium text-gray-900">{message}</p>
+        <p className="text-sm font-medium text-gray-900 dark:text-zinc-100">{message}</p>
         <button 
           onClick={() => setShow(false)}
-          className="text-gray-400 hover:text-gray-600 transition-colors"
+          className="text-gray-400 dark:text-zinc-500 hover:text-gray-600 dark:hover:text-zinc-300 transition-colors"
         >
           <X className="h-4 w-4" />
         </button>

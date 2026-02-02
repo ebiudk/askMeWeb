@@ -172,20 +172,20 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
   if (isRemoved) return null;
 
   return (
-    <li key={membership.user.id} className="hover:bg-gray-50 transition-colors duration-150 first:rounded-t-md last:rounded-b-md">
+    <li key={membership.user.id} className="hover:bg-gray-50 dark:hover:bg-zinc-800/50 transition-colors duration-150 first:rounded-t-md last:rounded-b-md">
       <div className="px-4 py-4 sm:px-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-y-3 sm:gap-y-0">
           <div className="flex items-center min-w-0">
-            <p className="text-sm font-semibold text-gray-900 truncate">
+            <p className="text-sm font-semibold text-gray-900 dark:text-zinc-100 truncate">
               {membership.user.display_name || membership.user.name || "不明なユーザー"}
             </p>
             <div className="ml-2 sm:ml-3 flex-shrink-0 flex">
               <p className={`px-2 py-0.5 inline-flex text-[10px] sm:text-xs leading-5 font-medium rounded-full ${
                 localRole === "admin" 
-                  ? "bg-purple-100 text-purple-800 border border-purple-200" 
+                  ? "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 border border-purple-200 dark:border-purple-800" 
                   : localRole === "co-admin"
-                  ? "bg-blue-100 text-blue-800 border border-blue-200"
-                  : "bg-gray-100 text-gray-600 border border-gray-200"
+                  ? "bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300 border border-blue-200 dark:border-blue-800"
+                  : "bg-gray-100 text-gray-600 dark:bg-zinc-800 dark:text-zinc-400 border border-gray-200 dark:border-zinc-700"
               }`}>
                 {localRole === "admin" ? "管理者" : localRole === "co-admin" ? "共管" : "会員"}
               </p>
@@ -202,8 +202,8 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
                 disabled={loading}
                 className={`inline-flex items-center whitespace-nowrap px-2 py-1 border text-[10px] sm:text-xs font-medium rounded transition-colors duration-150 ${
                   isLocationShared 
-                    ? "border-green-300 text-green-700 bg-green-50 hover:bg-green-100" 
-                    : "border-gray-300 text-gray-700 bg-gray-50 hover:bg-gray-100"
+                    ? "border-green-300 dark:border-green-800 text-green-700 dark:text-green-400 bg-green-50 dark:bg-green-900/20 hover:bg-green-100 dark:hover:bg-green-900/30" 
+                    : "border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 bg-gray-50 dark:bg-zinc-800 hover:bg-gray-100 dark:hover:bg-zinc-700"
                 }`}
               >
                 {isLocationShared ? "🔓公開中" : "🔒非公開"}
@@ -218,7 +218,7 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
                   disabled={loading}
                   className={`
                     inline-flex items-center justify-between w-32 px-3 py-1.5 text-sm font-medium border rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-1 transition-all duration-200
-                    ${loading ? "bg-gray-50 border-gray-200 text-gray-400 cursor-not-allowed" : "bg-white border-gray-300 text-gray-700 hover:border-indigo-400 focus:ring-indigo-500 focus:border-indigo-500"}
+                    ${loading ? "bg-gray-50 dark:bg-zinc-900 border-gray-200 dark:border-zinc-800 text-gray-400 dark:text-zinc-600 cursor-not-allowed" : "bg-white dark:bg-zinc-900 border-gray-300 dark:border-zinc-700 text-gray-700 dark:text-zinc-300 hover:border-indigo-400 focus:ring-indigo-500 focus:border-indigo-500"}
                   `}
                 >
                   <span>{roles.find(r => r.id === localRole)?.label}</span>
@@ -226,7 +226,7 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
                 </button>
 
                 {isOpen && (
-                  <div className="absolute right-0 top-full mt-1 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-20 overflow-hidden">
+                  <div className="absolute right-0 top-full mt-1 w-56 rounded-md shadow-lg bg-white dark:bg-zinc-900 ring-1 ring-black dark:ring-zinc-800 ring-opacity-5 z-20 overflow-hidden">
                     <div className="py-1" role="menu" aria-orientation="vertical">
                       {roles.map((role) => (
                         <button
@@ -234,20 +234,20 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
                           onClick={() => handleRoleChange(role.id)}
                           className={`
                             group flex w-full items-start px-4 py-2 text-sm text-left transition-colors duration-150
-                            ${localRole === role.id ? "bg-indigo-50 text-indigo-900" : "text-gray-700 hover:bg-gray-50"}
+                            ${localRole === role.id ? "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-900 dark:text-indigo-300" : "text-gray-700 dark:text-zinc-400 hover:bg-gray-50 dark:hover:bg-zinc-800"}
                           `}
                           role="menuitem"
                         >
                           <div className="flex-1">
-                            <p className={`font-medium ${localRole === role.id ? "text-indigo-900" : "text-gray-900"}`}>
+                            <p className={`font-medium ${localRole === role.id ? "text-indigo-900 dark:text-indigo-300" : "text-gray-900 dark:text-zinc-100"}`}>
                               {role.label}
                             </p>
-                            <p className="text-xs text-gray-500 group-hover:text-gray-600 mt-0.5">
+                            <p className="text-xs text-gray-500 dark:text-zinc-500 group-hover:text-gray-600 dark:group-hover:text-zinc-400 mt-0.5">
                               {role.description}
                             </p>
                           </div>
                           {localRole === role.id && (
-                            <CheckIcon className="h-4 w-4 text-indigo-600 mt-1" />
+                            <CheckIcon className="h-4 w-4 text-indigo-600 dark:text-indigo-400 mt-1" />
                           )}
                         </button>
                       ))}
@@ -281,19 +281,19 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
         </div>
         <div className="mt-2 sm:flex sm:justify-between">
           <div className="sm:flex">
-            <p className="flex items-center text-sm text-gray-500">
+            <p className="flex items-center text-sm text-gray-500 dark:text-zinc-400">
               居場所: {
                 (!membership.is_location_shared && membership.user.id !== currentUserId)
                 ? (
-                  <span className="text-gray-400 italic">非公開設定</span>
+                  <span className="text-gray-400 dark:text-zinc-600 italic">非公開設定</span>
                 )
                 : (membership.user.location?.is_hidden || !membership.user.location?.world_name) 
                 ? (
-                  <span title="VRChatがオフライン、もしくはAskMe!を起動していません" className="cursor-help">
+                  <span title="VRChatがオフライン、もしくはAskMe!を起動していません" className="cursor-help text-gray-400 dark:text-zinc-500">
                     オフライン
                   </span>
                 )
-                : membership.user.location.world_name
+                : <span className="text-gray-900 dark:text-zinc-100">{membership.user.location.world_name}</span>
               }
               {((membership.is_location_shared || membership.user.id === currentUserId) && membership.user.location && !membership.user.location.is_hidden && membership.user.location.world_id) && (
                 <a 
@@ -307,7 +307,7 @@ export default function MemberRow({ groupId, membership, currentUserRole, curren
               )}
             </p>
           </div>
-          <div className="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+          <div className="mt-2 flex items-center text-sm text-gray-500 dark:text-zinc-500 sm:mt-0">
             <p>
               最終更新:{" "}
               {membership.user.location?.updated_at

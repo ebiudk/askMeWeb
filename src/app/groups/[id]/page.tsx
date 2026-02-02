@@ -89,8 +89,8 @@ async function GroupDetail({ id, userId }: { id: string; userId: string }) {
         </div>
       </div>
 
-      <div className="bg-white shadow sm:rounded-md">
-        <ul className="divide-y divide-gray-200">
+      <div className="bg-white dark:bg-zinc-900 shadow-sm border dark:border-zinc-800 sm:rounded-md overflow-hidden">
+        <ul className="divide-y divide-gray-200 dark:divide-zinc-800">
           {sanitizedMemberships.map((membership: any) => (
             <MemberRow 
               key={membership.user.id} 
@@ -109,12 +109,12 @@ async function GroupDetail({ id, userId }: { id: string; userId: string }) {
 function GroupDetailSkeleton() {
   return (
     <div className="space-y-6 animate-pulse">
-      <div className="h-10 bg-gray-200 rounded w-1/3"></div>
-      <div className="bg-white shadow overflow-hidden sm:rounded-md">
+      <div className="h-10 bg-gray-200 dark:bg-zinc-800 rounded w-1/3"></div>
+      <div className="bg-white dark:bg-zinc-900 shadow-sm border dark:border-zinc-800 overflow-hidden sm:rounded-md">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="p-4 border-b">
-            <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
-            <div className="h-4 bg-gray-100 rounded w-1/2"></div>
+          <div key={i} className="p-4 border-b dark:border-zinc-800">
+            <div className="h-4 bg-gray-200 dark:bg-zinc-800 rounded w-1/4 mb-2"></div>
+            <div className="h-4 bg-gray-100 dark:bg-zinc-800 rounded w-1/2"></div>
           </div>
         ))}
       </div>
