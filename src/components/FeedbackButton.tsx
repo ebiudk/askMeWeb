@@ -13,7 +13,7 @@ export default function FeedbackButton() {
       </div>
 
       <a
-        href="https://x.com/intent/tweet?text=@ebiudk"
+        href="https://x.com/intent/post?text=%40ebiudk"
         target="_blank"
         rel="noopener noreferrer"
         className="bg-black text-white p-3 rounded-full shadow-lg hover:bg-gray-800 transition-all flex items-center justify-center group"
