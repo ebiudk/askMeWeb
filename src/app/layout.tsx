@@ -3,6 +3,7 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import AuthProvider from "@/components/auth-provider";
 import Notification from "@/components/Notification"; // Notification を追加
+import FeedbackButton from "@/components/FeedbackButton";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://ask-me.ebiudk.link"),
@@ -27,6 +28,7 @@ export default function RootLayout({
             {children}
           </main>
           <Notification />
+          <FeedbackButton />
         </AuthProvider>
       </body>
     </html>
