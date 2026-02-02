@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/react";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import AuthProvider from "@/components/auth-provider";
@@ -50,6 +51,7 @@ export default function RootLayout({
           </footer>
           <Notification />
           <FeedbackButton />
+          <Analytics />
         </AuthProvider>
       </body>
     </html>
