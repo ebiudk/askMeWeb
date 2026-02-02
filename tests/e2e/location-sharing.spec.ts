@@ -42,4 +42,43 @@ test.describe('位置情報共有機能', () => {
     await 表示されていることを確認する(page, worldName);
     await 表示されていることを確認する(page, 'Test User');
   });
+
+  test('すべてのグループの居場所共有を一括でオン/オフできること', async ({ page }) => {
+    const username = `user-toggle-all-${Date.now()}`;
+    await ログインする(page, username);
+
+    // 2つのグループを作成
+    const group1 = `Group 1 ${Date.now()}`;
+    const group2 = `Group 2 ${Date.now()}`;
+    await グループを作成する(page, group1);
+    await グループを作成する(page, group2);
+
+    // ダッシュボードに移動
+    await page.goto('/');
+
+    // 最初はデフォルトでオンになっているはず
+    await expect(page.locator('button[title="このグループに居場所を公開中"]')).toHaveCount(2);
+
+    // 一括オフボタンをクリック
+    const offButton = page.getByRole('button', { name: 'すべての共有をオフ' });
+    await offButton.click();
+
+    // 更新を待つ (ボタンが再度有効になるのを待つ)
+    await expect(offButton).toBeEnabled();
+
+    // すべてのトグルがオフになっていることを確認
+    await expect(page.locator('button[title="このグループに居場所を非公開"]')).toHaveCount(2);
+    await expect(page.locator('button[title="このグループに居場所を公開中"]')).toHaveCount(0);
+
+    // 一括オンボタンをクリック
+    const onButton = page.getByRole('button', { name: 'すべての共有をオン' });
+    await onButton.click();
+
+    // 更新を待つ
+    await expect(onButton).toBeEnabled();
+
+    // すべてのトグルがオンになっていることを確認
+    await expect(page.locator('button[title="このグループに居場所を公開中"]')).toHaveCount(2);
+    await expect(page.locator('button[title="このグループに居場所を非公開"]')).toHaveCount(0);
+  });
 });

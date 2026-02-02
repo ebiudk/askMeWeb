@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Users, MapPin, PlusCircle } from "lucide-react";
 import { Suspense } from "react";
 import LocationShareToggle from "@/components/LocationShareToggle";
+import AllGroupsLocationShareToggle from "@/components/AllGroupsLocationShareToggle";
 import { getUserGroups } from "@/services/groupService";
 import { createGroupViewModel } from "@/view-models/GroupViewModel";
 
@@ -43,6 +44,7 @@ async function GroupList({ userId }: { userId: string }) {
                 <div className="flex items-center gap-2">
                   {myMembership && (
                     <LocationShareToggle 
+                      key={`${group.id}-${myMembership.isLocationShared}`}
                       groupId={group.id} 
                       initialValue={myMembership.isLocationShared} 
                     />
@@ -148,9 +150,10 @@ export default async function Home() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
         <h1 className="text-2xl font-bold text-gray-900 dark:text-white">ダッシュボード</h1>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-4">
+          <AllGroupsLocationShareToggle />
           <Link
             href="/groups/new"
             className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none"
