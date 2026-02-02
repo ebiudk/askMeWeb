@@ -2,10 +2,13 @@ import { test, expect } from '@playwright/test';
 
 test.describe('位置情報共有機能', () => {
   test('APIキーを発行し、位置情報を更新して表示できること', async ({ page, request }) => {
+    const username = `user-loc-${Date.now()}`;
     // 1. ログインして設定ページへ
-    await page.goto('/login');
+    await page.goto(`/login?username=${username}`);
     await page.getByTestId('test-login-button').click();
+    await expect(page).toHaveURL(/\/$/);
     await page.goto('/settings');
+    await expect(page.getByRole('heading', { name: '設定', exact: true })).toBeVisible();
 
     // 2. APIキーを発行
     // SettingsContent の実装では「APIキーを発行する」または「APIキーを再発行する」
@@ -53,7 +56,8 @@ test.describe('位置情報共有機能', () => {
     // 6. 共有をオフにする
     await page.getByRole('button', { name: '🔓公開中' }).click();
     await expect(page.getByRole('button', { name: '🔒非公開' })).toBeVisible();
-    await expect(page.getByText('非公開設定')).toBeVisible();
+    // 自分の画面では位置情報は引き続き見える
+    await expect(page.getByText(worldName)).toBeVisible();
 
     // 7. 再度オンにする
     await page.getByRole('button', { name: '🔒非公開' }).click();
@@ -62,14 +66,18 @@ test.describe('位置情報共有機能', () => {
   });
 
   test('位置情報をプライベート設定（非表示）にできること', async ({ page, request }) => {
+    const username = `user-priv-${Date.now()}`;
     // 1. ログインしてAPIキー取得（既存のものを使用するか新規発行）
-    await page.goto('/login');
+    await page.goto(`/login?username=${username}`);
     await page.getByTestId('test-login-button').click();
+    await expect(page).toHaveURL(/\/$/);
     await page.goto('/settings');
+    await expect(page.getByRole('heading', { name: '設定', exact: true })).toBeVisible();
     
     let apiKey = await page.locator('input[readonly]').inputValue();
     if (apiKey === '未発行') {
       await page.getByRole('button', { name: 'APIキーを発行する' }).click();
+      await expect(page.locator('input[readonly]')).not.toHaveValue('未発行');
       apiKey = await page.locator('input[readonly]').inputValue();
     }
 

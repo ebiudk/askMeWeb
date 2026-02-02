@@ -7,6 +7,7 @@ test.describe('招待機能', () => {
     const pageA = await contextA.newPage();
     await pageA.goto('/login?username=user-a');
     await pageA.getByTestId('test-login-button').click();
+    await expect(pageA).toHaveURL(/\/$/);
     
     await pageA.goto('/groups/new');
     const groupName = `招待テストグループ ${Date.now()}`;
@@ -29,6 +30,7 @@ test.describe('招待機能', () => {
     const pageB = await contextB.newPage();
     await pageB.goto('/login?username=user-b');
     await pageB.getByTestId('test-login-button').click();
+    await expect(pageB).toHaveURL(/\/$/);
     
     await pageB.goto(inviteUrl);
     await expect(pageB.getByText(groupName)).toBeVisible();

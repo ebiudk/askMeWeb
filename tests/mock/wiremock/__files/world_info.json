@@ -1,0 +1,7 @@
+{
+  "id": "wrld_12345",
+  "name": "Mock Test World",
+  "description": "This is a mocked world info from WireMock",
+  "capacity": 20,
+  "occupants": 5
+}

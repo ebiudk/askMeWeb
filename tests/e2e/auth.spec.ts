@@ -36,4 +36,18 @@ test.describe('認証機能', () => {
     // ログインページまたはトップページ（非公開状態）にリダイレクトされることを確認
     await expect(page).toHaveURL(/\/login|\/$/);
   });
+
+  test('未ログイン状態で保護されたページにアクセスするとログインにリダイレクトされること', async ({ page }) => {
+    await page.goto('/settings');
+    // ログインページまたはAuth.jsのサインインページにリダイレクトされることを確認
+    await expect(page).toHaveURL(/\/login|.*\/api\/auth\/signin/);
+  });
+
+  test('未ログイン状態でトップページにアクセスするとランディングページが表示されること', async ({ page }) => {
+    await page.goto('/');
+    // 「ログインしてはじめる」ボタンが表示されていることを確認
+    await expect(page.getByRole('link', { name: /ログインしてはじめる/i })).toBeVisible();
+    // ダッシュボードという文字が表示されていないことを確認
+    await expect(page.getByText('ダッシュボード')).not.toBeVisible();
+  });
 });

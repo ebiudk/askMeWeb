@@ -46,14 +46,10 @@ export default defineConfig({
 
   /* Run your local dev server before starting the tests */
   webServer: process.env.CI ? undefined : {
-    command: 'npm run dev',
+    command: 'npx prisma db push && npm run dev',
     url: BASE_URL,
     reuseExistingServer: !process.env.CI,
     stdout: 'pipe',
     stderr: 'pipe',
-    env: {
-      ALLOW_TEST_AUTH: 'true',
-      AUTH_SECRET: 'any-secret-for-testing',
-    },
   },
 });

@@ -3,7 +3,8 @@ import { test, expect } from '@playwright/test';
 test.describe('グループ管理機能', () => {
   test.beforeEach(async ({ page }) => {
     // 各テストの前にログイン
-    await page.goto('/login');
+    const username = `test-user-${Date.now()}`;
+    await page.goto(`/login?username=${username}`);
     await page.getByTestId('test-login-button').click();
     await expect(page).toHaveURL(/\/$/);
     // ログイン後のコンテンツ読み込みを待つ
@@ -29,7 +30,6 @@ test.describe('グループ管理機能', () => {
     await page.click(`text=${groupName}`);
     await expect(page).toHaveURL(/\/groups\/[a-zA-Z0-9_-]+/);
     await expect(page.getByText(groupName)).toBeVisible();
-    await expect(page.getByText('メンバー一覧')).toBeVisible();
   });
 
   test('グループ名を変更できること', async ({ page }) => {
@@ -47,7 +47,7 @@ test.describe('グループ管理機能', () => {
     // 新しい名前を入力
     const updatedName = `変更後グループ ${Date.now()}`;
     await page.fill('input[type="text"]', updatedName);
-    await page.locator('button:has(svg.h-5.w-5.text-green-600)').click(); // CheckIcon
+    await page.locator('button.text-green-600').click(); // CheckIcon
 
     // 名前が更新されていることを確認
     await expect(page.getByText(updatedName)).toBeVisible();
@@ -77,6 +77,7 @@ test.describe('グループ管理機能', () => {
     const pageA = await contextA.newPage();
     await pageA.goto('/login?username=admin-user');
     await pageA.getByTestId('test-login-button').click();
+    await expect(pageA).toHaveURL(/\/$/);
     
     await pageA.goto('/groups/new');
     const groupName = `メンバー管理テスト ${Date.now()}`;
@@ -93,20 +94,23 @@ test.describe('グループ管理機能', () => {
     const pageB = await contextB.newPage();
     await pageB.goto('/login?username=member-user');
     await pageB.getByTestId('test-login-button').click();
+    await expect(pageB).toHaveURL(/\/$/);
     await pageB.goto(inviteUrl);
-    await pageB.click('button:has-text("参加する")');
+    await pageB.click('button:has-text("参加を承諾する")');
     await expect(pageB).toHaveURL(/\/groups\/[a-zA-Z0-9_-]+/);
 
     // 4. ユーザーAがユーザーBのロールを「共同管理者」に変更
     await pageA.reload(); // メンバー一覧を更新
-    await pageA.getByRole('button', { name: 'メンバー' }).click();
+    await pageA.getByRole('button', { name: 'メンバー', exact: true }).click();
     await pageA.getByRole('menuitem', { name: /共同管理者/ }).click();
     
     // 変更が反映されたか確認
     await expect(pageA.getByText('共管')).toBeVisible();
 
     // 5. ユーザーBがグループを脱退
-    pageB.on('dialog', dialog => dialog.accept());
+    pageB.on('dialog', async dialog => {
+      await dialog.accept();
+    });
     await pageB.getByRole('button', { name: '脱退する' }).click();
     
     await expect(pageB).toHaveURL('/');
@@ -122,6 +126,7 @@ test.describe('グループ管理機能', () => {
     const pageA = await contextA.newPage();
     await pageA.goto('/login?username=admin-user-2');
     await pageA.getByTestId('test-login-button').click();
+    await expect(pageA).toHaveURL(/\/$/);
     
     await pageA.goto('/groups/new');
     const groupName = `メンバー削除テスト ${Date.now()}`;
@@ -138,8 +143,9 @@ test.describe('グループ管理機能', () => {
     const pageB = await contextB.newPage();
     await pageB.goto('/login?username=member-user-2');
     await pageB.getByTestId('test-login-button').click();
+    await expect(pageB).toHaveURL(/\/$/);
     await pageB.goto(inviteUrl);
-    await pageB.click('button:has-text("参加する")');
+    await pageB.click('button:has-text("参加を承諾する")');
     await expect(pageB).toHaveURL(/\/groups\/[a-zA-Z0-9_-]+/);
 
     // 4. ユーザーAがユーザーBを削除

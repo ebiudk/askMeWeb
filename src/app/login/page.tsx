@@ -59,8 +59,22 @@ export default async function LoginPage({
             action={async () => {
               "use server"
               const { username, callbackUrl } = await searchParams
+              const targetUsername = username || "test-user"
+              
+              // テストユーザーをデータベースに作成/更新
+              const { prisma } = await import("@/lib/prisma")
+              await prisma.user.upsert({
+                where: { id: `id-${targetUsername}` },
+                update: { name: targetUsername },
+                create: {
+                  id: `id-${targetUsername}`,
+                  name: targetUsername,
+                  email: `${targetUsername}@example.com`,
+                },
+              })
+
               await signIn("credentials", {
-                username: username || "test-user",
+                username: targetUsername,
                 redirectTo: callbackUrl || "/",
               })
             }}
