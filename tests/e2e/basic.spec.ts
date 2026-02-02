@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import { URLが一致することを確認する } from './steps';
 
 test('タイトルとログインリンクが表示されていること', async ({ page }) => {
   await page.goto('/');
@@ -10,13 +11,11 @@ test('タイトルとログインリンクが表示されていること', async
   const loginLink = page.getByRole('link', { name: /login/i });
   if (await loginLink.isVisible()) {
     await loginLink.click();
-    await expect(page).toHaveURL(/\/login/);
+    await URLが一致することを確認する(page, /\/login/);
   }
 });
 
 test('ログインページにサインインオプションが表示されていること', async ({ page }) => {
   await page.goto('/login');
-
-  // テスト用ログインボタンなどが表示されているか確認
   await expect(page.getByTestId('test-login-button')).toBeVisible();
 });
