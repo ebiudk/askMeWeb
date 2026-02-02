@@ -1,6 +1,5 @@
 import Link from "next/link"
 import { auth, signOut } from "@/auth"
-import { ModeToggle } from "./mode-toggle"
 
 export default async function Navbar() {
   const session = await auth()
@@ -20,7 +19,6 @@ export default async function Navbar() {
             </Link>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
-            <ModeToggle />
             {session ? (
               <>
                 <Link href="/settings" className="text-sm text-gray-500 dark:text-zinc-400 hover:text-gray-700 dark:hover:text-zinc-200">
