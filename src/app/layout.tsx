@@ -41,7 +41,6 @@ export default function RootLayout({
                   <span>Client</span>
                 </a>
                 <span className="hidden md:inline">|</span>
-                <span>© 2025 AskMe!</span>
               </div>
               <p className="leading-tight opacity-80">
                 AskMe! はVRChat Inc.が公式に作成・承認したものではなく、VRChat Inc.の見解・意見を反映したものではありません。<br />
