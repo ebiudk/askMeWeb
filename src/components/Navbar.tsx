@@ -13,8 +13,8 @@ export default async function Navbar() {
               <img src="/logo.png" alt="AskMe Logo" className="h-8 w-8" />
               <span className="text-xl sm:text-2xl font-bold text-indigo-600 dark:text-indigo-400 hidden sm:inline">AskMe! Web</span>
             </Link>
-            <Link href="https://github.com/ebiudk/askMeClient/releases/latest" target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-2 sm:px-3 py-1.5 sm:py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 ml-2 sm:ml-4">
-              <span className="hidden sm:inline">クライアントダウンロード</span>
+            <Link href="https://github.com/ebiudk/askMeClient/releases/latest" target="_blank" rel="noopener noreferrer" className="inline-flex items-center px-2 sm:px-3 py-1.5 sm:py-2 border border-transparent text-xs sm:text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 ml-2 sm:ml-4 hidden sm:inline">
+              <span>クライアントダウンロード</span>
             </Link>
           </div>
           <div className="flex items-center gap-2 sm:gap-4">
