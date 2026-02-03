@@ -54,7 +54,7 @@ test.describe('グループ管理機能', () => {
     await expect(page.getByText(groupName)).not.toBeVisible();
   });
 
-  test('メンバーのロールを変更し、グループを脱退できること', async ({ browser }) => {
+  test('メンバーのロールを変更し、グループを脱退できること', {tag: 'flacky'},async ({ browser }) => {
     // 1. ユーザーAがグループ作成
     const contextA = await browser.newContext();
     const pageA = await contextA.newPage();

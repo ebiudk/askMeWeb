@@ -41,6 +41,19 @@ test.describe('位置情報共有機能', () => {
     await page.reload();
     await 表示されていることを確認する(page, worldName);
     await 表示されていることを確認する(page, 'Test User');
+
+    // 6. worldId が 'offline' の場合はオフライン扱いになること
+    await 位置情報を更新する(request, apiKey, {
+      current_world_id: "offline",
+      current_world_name: "",
+      current_instance_id: "",
+      display_name: "",
+    });
+
+    await page.reload();
+    await 表示されていることを確認する(page, 'オフライン');
+    await expect(page.getByText(worldName)).not.toBeVisible();
+    await expect(page.getByText('Test User')).not.toBeVisible();
   });
 
   test('すべてのグループの居場所共有を一括でオン/オフできること', async ({ page }) => {
