@@ -54,6 +54,7 @@ test.describe('位置情報共有機能', () => {
     await 表示されていることを確認する(page, 'オフライン');
     await expect(page.getByText(worldName)).not.toBeVisible();
     await expect(page.getByText('Test User')).not.toBeVisible();
+    await expect(page.getByRole('link', { name: 'Join' })).not.toBeVisible();
   });
 
   test('すべてのグループの居場所共有を一括でオン/オフできること', async ({ page }) => {

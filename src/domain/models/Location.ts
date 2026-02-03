@@ -20,15 +20,16 @@ export class Location {
     worldName: string | null,
     instanceId: string | null
   ): Location {
-    const idLower = (worldId || "").toLowerCase();
+    const raw = worldId || "";
+    const idNormalized = raw.trim().toLowerCase();
     // Treat empty, null or explicit "offline" as clearing (no location)
-    const isClearing = !worldId || worldId === "" || idLower === "offline";
-    const isHidden = worldId === "private";
+    const isClearing = idNormalized === "" || idNormalized === "offline";
+    const isHidden = idNormalized === "private";
 
     return new Location({
-      worldId: isClearing ? null : worldId,
-      worldName: isClearing ? null : worldName,
-      instanceId: isClearing ? null : instanceId,
+      worldId: isClearing ? null : raw.trim(),
+      worldName: isClearing ? null : (worldName || null),
+      instanceId: isClearing ? null : (instanceId || null),
       isHidden,
       updatedAt: new Date(),
     });
